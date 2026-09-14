@@ -281,6 +281,7 @@
 <nav class="subnav" id="subnav-automacoes"><div class="wrap">
   <a href="#sec-autocomo">Como o lead vira negociação</a>
   <a href="#sec-autofluxos">Fluxos de hoje</a>
+  <a href="#sec-autoativas">Automações ativas no CRM</a>
   <a href="#sec-autocatalogo">Catálogo de automações</a>
   <a href="#sec-autobacklog">O que revisar e construir</a>
 </div></nav>
@@ -360,7 +361,7 @@
         <ol><li>Confirmar recebimento e perguntar a necessidade específica</li><li>Perguntar sobre a empresa (o que faz, porte)</li><li>Perguntar se tem mais alguém na decisão</li><li>Até 3 tentativas de contato em canais diferentes, se não responder</li><li>Marcar a agenda do Discovery</li></ol>
         <div class="chat"><b>Mensagem</b>"Oi, [nome]! Recebi seu pedido de proposta. Pra eu já vir preparado: qual a necessidade específica hoje? E me conta rapidinho sobre a empresa — segmento e porte."</div>
         <span class="k tarefas">Tarefas no RD CRM</span>
-        <ul><li>1ª tentativa de contato (automática)</li><li>2ª tentativa</li><li>3ª tentativa</li><li>Marcar reunião de Discovery</li></ul>
+        <ul><li>1ª tentativa de contato (automática — automação "SQL - Tarefas")</li><li>2ª tentativa (manual, por enquanto)</li><li>3ª tentativa (manual, por enquanto)</li><li>Marcar reunião de Discovery (automática — automação "SQL - Tarefas")</li></ul>
         <span class="k gatilho">Gatilho de passagem</span>
         <p class="v">Falou com a pessoa E marcou o Discovery. Preencher: origem, empresa, cargo/nome, data da reunião.</p>
         <span class="k prazo">Prazo</span>
@@ -368,7 +369,7 @@
         <p class="fc-note"><strong>Regra dos 5 minutos (RD):</strong> a chance de qualificar cai 21× quando o 1º contato passa de 5 pra 30 min. Como esse lead já pediu proposta, o alvo é responder <strong>na hora</strong>, não "em 1 dia".</p>
         <p class="fc-note">+ preencher a <strong>Data de Previsão de Fechamento</strong> (campo nativo do RD) já aqui — é o campo que mais importa pro forecast do funil inteiro.</p>
         <span class="k auto">Automação sugerida</span>
-        <div class="auto-card"><b>Confirmação imediata</b>Ao entrar em SQL: e-mail "Recebemos seu pedido! Em breve um consultor vai te chamar" + tarefa de 1ª tentativa já criada.</div>
+        <div class="auto-card"><b>Confirmação imediata <span class="tagfield" style="background:rgba(251,191,36,.12);color:var(--nd-warning);border:1px solid rgba(251,191,36,.3);margin-left:4px">parcial — falta o e-mail</span></b>Ao entrar em SQL: e-mail "Recebemos seu pedido! Em breve um consultor vai te chamar" + tarefa de 1ª tentativa já criada. A automação "SQL - Tarefas" já cria a tarefa; o e-mail pro lead ainda não existe.</div>
         <span class="k perda">Motivos de perda</span>
         <div class="pills"><span class="pill">Cliente não retornou</span><span class="pill">Não tem Perfil</span><span class="pill">Concorre com cliente da casa</span><span class="pill">Sumiu do Mapa</span></div>
       </div>
@@ -381,6 +382,7 @@
         <ol><li>Realizar a reunião de Discovery</li><li>Pedir material complementar/documentação se faltar</li><li>Pedir 2ª reunião técnica se a complexidade for alta</li><li>Mapear decisor, orçamento aproximado e prazo</li><li>Confirmar que ele quer receber a proposta</li></ol>
         <span class="k tarefas">Tarefas no RD CRM</span>
         <ul><li>Realizar reunião de Discovery</li><li><strong>Subir a ata/transcrição da reunião no RD</strong> — automático com o add-on de IA para Negociações (ver aba Ferramentas e Funcionalidades Adicionais)</li><li>Pedir material complementar (se aplicável)</li><li>Montar proposta comercial</li></ul>
+        <p class="fc-note">Existe uma automação <strong>"Discovery - Tarefas"</strong> ativa desde 09/09 (dispara ao mover pra Discovery) — conteúdo exato ainda não confirmado, ver aba Automações, "Automações ativas no CRM".</p>
         <span class="k gatilho">Gatilho de passagem</span>
         <p class="v">Cliente confirmou que quer receber a proposta comercial.</p>
         <span class="k prazo">Prazo</span>
@@ -402,6 +404,7 @@
         <div class="callout-mini"><span class="lbl">Transcrição da reunião</span><p>Igual no Discovery: usar uma ferramenta de transcrição por IA na chamada e subir o resultado na negociação — não depender de anotação manual.</p></div>
         <span class="k tarefas">Tarefas no RD CRM</span>
         <ul><li>Montar e enviar proposta</li><li>Colar o link do HTML na Observação</li><li><strong>Subir a transcrição da reunião no RD</strong></li><li>Follow-up de proposta</li></ul>
+        <p class="fc-note">Existe uma automação <strong>"Proposta - Tarefas"</strong> ativa desde 09/09 (dispara ao mover pra Proposta) — conteúdo exato ainda não confirmado, ver aba Automações, "Automações ativas no CRM".</p>
         <span class="k gatilho">Gatilho de passagem</span>
         <p class="v">Cliente aceitou a proposta comercial e quer seguir com as condições.</p>
         <span class="k prazo">Prazo</span>
@@ -419,8 +422,9 @@
         <p class="obj"><b>Descrição:</b> o cliente já disse "sim" — o que resta é jurídico, condição comercial e assinatura, não mais convencimento.</p>
         <span class="k acoes">Ações</span>
         <ol><li>Ajustar condição comercial e escopo</li><li>Apoiar o jurídico do cliente</li><li>Gerar o contrato</li><li>Cobrar até a assinatura</li><li>Verificar se o cliente exige outro sistema pra formalizar (portal de fornecedor, procurement)</li><li>Registrar as comunicações e conversas na negociação</li></ol>
-        <span class="k tarefas">Tarefas no RD CRM</span>
+        <span class="k tarefas">Tarefas no RD CRM <span class="tagfield" style="background:rgba(74,222,128,.12);color:var(--nd-success);border:1px solid rgba(74,222,128,.3);margin-left:4px">automáticas</span></span>
         <ul><li>Ajustar condição comercial / escopo</li><li>Apoio jurídico</li><li>Gerar contrato</li><li>Cobrança de assinatura</li></ul>
+        <p class="fc-note">As 4 nascem de uma vez com a automação <strong>"Negociação - Tarefas"</strong>, ativa desde 09/09 (dispara ao mover pra Negociação, prazo de 1 dia cada).</p>
         <span class="k gatilho">Gatilho de passagem</span>
         <p class="v">Contrato assinado pelas duas partes.</p>
         <span class="k prazo">Prazo</span>
@@ -438,8 +442,9 @@
         <p class="obj"><b>Descrição:</b> etapa terminal do funil de vendas — o contrato já está assinado, o que falta é a transição organizada pra quem vai entregar.</p>
         <span class="k acoes">Ações</span>
         <ol><li>Marcar como venda ganha</li><li>Avisar o financeiro</li><li>Avisar o jurídico (se o contrato tiver cláusula que exige acompanhamento)</li><li>Avisar os times responsáveis por assumir a conta</li><li>Definir os prazos de handover</li><li>Agendar a reunião interna de handover</li><li>Agendar a reunião de kick-off com o cliente</li><li>Enviar materiais e conteúdos de boas-vindas</li></ol>
-        <span class="k tarefas">Tarefas no RD CRM</span>
+        <span class="k tarefas">Tarefas no RD CRM <span class="tagfield" style="background:rgba(74,222,128,.12);color:var(--nd-success);border:1px solid rgba(74,222,128,.3);margin-left:4px">automáticas</span></span>
         <ul><li>Avisar financeiro</li><li>Avisar jurídico</li><li>Avisar time de operação</li><li>Agendar handover interno</li><li>Agendar kick-off com o cliente</li></ul>
+        <p class="fc-note">As 5 nascem de uma vez com a automação <strong>"Fechado - Tarefas"</strong>, ativa desde 09/09 (dispara ao mover pra Fechado, prazo de 1 dia cada). Falta só o e-mail interno pro time de operação e a negociação espelho no futuro funil de CS/CX (catálogo de automações, linha 10).</p>
         <span class="k gatilho">Encerra quando</span>
         <p class="v">Equipe de operação já está com o cliente e o kick-off está marcado. Etapa terminal — sem motivo de perda.</p>
       </div>
@@ -1038,11 +1043,38 @@
       </ol>
     </div>
   </div>
-  <p class="sec-lead" style="margin-top:12px;font-size:.82rem">Do lado do CRM, hoje só existe <strong>1 automação nativa</strong> ("negócio criado → e-mail"). O catálogo abaixo é o que dá pra construir.</p>
+  <p class="sec-lead" style="margin-top:12px;font-size:.82rem">Do lado do CRM, além das 5 automações de tarefa por etapa (seção a seguir), existe <strong>1 automação modelo</strong> ("negócio criado → e-mail"), criada por Rodrigo.</p>
+</div></section>
+
+<section class="block" id="sec-autoativas"><div class="wrap">
+  <p class="overline">03</p>
+  <h2>Automações ativas no RD CRM — conferido em tela, 14/09</h2>
+  <p class="sec-lead">Em <strong>Configurações → Automações → Minhas automações</strong>: <strong>6 ativas de 100</strong> possíveis no plano Advanced. As 5 primeiras foram criadas por Nathan em 09/09, uma por etapa do funil ND — todas do tipo "negociação criada/movida → cria tarefa(s)".</p>
+
+  <div class="scroll"><table>
+    <thead><tr><th>Automação</th><th>Gatilho</th><th>Ação — tarefas criadas</th><th>Execuções</th></tr></thead>
+    <tbody>
+      <tr><td><strong>SQL - Tarefas</strong></td><td>Negociação <strong>criada</strong> · Funil ND · etapa SQL</td><td>WhatsApp "1ª tentativa de contato" (1 dia) · Reunião "Marcar reunião de Discovery" (1 dia)</td><td>—</td></tr>
+      <tr><td><strong>Discovery - Tarefas</strong></td><td>Negociação <strong>movida</strong> · Funil ND · etapa Discovery</td><td><span style="color:var(--nd-warning)">conteúdo a confirmar com Nathan — não veio completo na tela copiada</span></td><td>—</td></tr>
+      <tr><td><strong>Proposta - Tarefas</strong></td><td>Negociação <strong>movida</strong> · Funil ND · etapa Proposta</td><td><span style="color:var(--nd-warning)">conteúdo a confirmar com Nathan — não veio completo na tela copiada</span></td><td>—</td></tr>
+      <tr><td><strong>Negociação - Tarefas</strong></td><td>Negociação <strong>movida</strong> · Funil ND · etapa Negociação</td><td>Tarefa "Apoio jurídico" (1 dia) · Tarefa "Gerar contrato" (1 dia) · Tarefa "Cobrança de assinatura" (1 dia) · Tarefa "Ajustar condição comercial / escopo" (1 dia)</td><td>—</td></tr>
+      <tr><td><strong>Fechado - Tarefas</strong></td><td>Negociação <strong>movida</strong> · Funil ND · etapa Fechado</td><td>Tarefa "Avisar jurídico" · Tarefa "Avisar time de operação" · Tarefa "Avisar financeiro" · Reunião "Agendar handover interno" · Reunião "Agendar kick-off com o cliente" (todas 1 dia)</td><td>—</td></tr>
+      <tr><td>Quando negociação for criada então enviar um email <span class="tagfield geral" style="margin-left:4px">modelo</span></td><td>Negociação criada (modelo pronto RD)</td><td>Envia e-mail — criada por Rodrigo, 21/08</td><td>11 (última em 14/09)</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout ok" style="margin-top:14px">
+    <span class="lbl">O que isso muda no resto desta aba</span>
+    <p>As automações reais são a versão <strong>mais simples e direta</strong> do que o catálogo (seção a seguir) desenhava: um bloco só por etapa, criando de uma vez as tarefas já listadas em "Tarefas no RD CRM" de cada etapa (aba Funil ND) — sem e-mail automático pro lead, sem prazos diferenciados por tarefa, sem mover de etapa por campo. As linhas 1, 5, 6 e 10 do catálogo passam a "parcial" (o núcleo de criar tarefa já está ativo; o resto — e-mail, roleta, prazos específicos — segue como evolução).</p>
+  </div>
+  <div class="callout warn" style="margin-top:10px">
+    <span class="lbl">Ajustar nesta aba com o Nathan</span>
+    <p>No card <strong>SQL</strong> (aba Funil ND) a lista "Tarefas no RD CRM" cita 4 tarefas (1ª, 2ª, 3ª tentativa + marcar Discovery), mas a automação real só cria 2 (1ª tentativa + marcar Discovery) — a 2ª e a 3ª tentativa continuam manuais até virarem automação (catálogo, linha 2: SLA de resposta). E falta confirmar o conteúdo exato de <strong>Discovery - Tarefas</strong> e <strong>Proposta - Tarefas</strong> pra fechar esta tabela.</p>
+  </div>
 </div></section>
 
 <section class="block" id="sec-autocatalogo"><div class="wrap">
-  <p class="overline">03</p>
+  <p class="overline">04</p>
   <h2>Catálogo de automações — o que dá pra construir no RD CRM</h2>
   <p class="sec-lead">Toda automação nativa do RD CRM é uma dupla <strong>gatilho → ação</strong>. No plano <strong>Advanced</strong> (o da ND) dá pra ter <strong>até 100 automações</strong>, entre modelos prontos e personalizadas (no Pro, até 50).</p>
 
@@ -1057,37 +1089,33 @@
   </div>
 
   <h3 style="margin-top:20px">Fluxos recomendados — do mais essencial ao avançado</h3>
-  <p class="sec-lead" style="font-size:.82rem">Atualização 14/09: Nathan já configurou no RD CRM as automações de <strong>criação automática de tarefa ao entrar na etapa</strong> (linhas 1, 5 e 6) — o resto do catálogo segue como proposta, não implementado ainda.</p>
+  <p class="sec-lead" style="font-size:.82rem">Status conferido em tela (seção 03, acima): linhas 1, 5, 6 e 10 têm o núcleo — <strong>criar tarefa</strong> — já ativo via as automações "X - Tarefas"; o que falta em cada uma é o resto do desenho (e-mail, prazo diferenciado, roleta). As demais seguem como proposta, não implementadas.</p>
   <div class="scroll"><table>
     <thead><tr><th>#</th><th>Objetivo</th><th>Gatilho</th><th>Ação</th><th>Status</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td><strong>Boas-vindas + 1º contato</strong></td><td>Negociação criada na etapa SQL</td><td>E-mail de confirmação pro lead + cria tarefa "1ª tentativa de contato" pro dono (prazo: agora)</td><td><span class="tagfield" style="background:rgba(74,222,128,.12);color:var(--nd-success);border:1px solid rgba(74,222,128,.3)">ativo</span></td></tr>
+      <tr><td>1</td><td><strong>Boas-vindas + 1º contato</strong></td><td>Negociação criada na etapa SQL</td><td>E-mail de confirmação pro lead + cria tarefa "1ª tentativa de contato" pro dono (prazo: agora)</td><td><span class="tagfield" style="background:rgba(251,191,36,.12);color:var(--nd-warning);border:1px solid rgba(251,191,36,.3)">parcial</span></td></tr>
       <tr><td>2</td><td><strong>SLA de resposta</strong></td><td>Negociação em SQL sem nenhuma interação em 30 min</td><td>Troca o responsável (roleta) — ou, no mínimo, notifica o gestor</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
       <tr><td>3</td><td><strong>Distribuição round-robin</strong></td><td>Negociação criada sem responsável</td><td>Alterna o responsável entre os vendedores ativos do time</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
       <tr><td>4</td><td><strong>Passagem automática por campo</strong></td><td>Campos "Decisor identificado" = Sim <em>e</em> "Orçamento estimado" preenchido</td><td>Move a negociação de Discovery → Proposta</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
-      <tr><td>5</td><td><strong>Cadência do Playbook</strong></td><td>Negociação movida pra Proposta</td><td>Cria tarefa "Follow-up de proposta" com prazo +48h (na Negociação: "Cobrar assinatura" +3 dias)</td><td><span class="tagfield" style="background:rgba(74,222,128,.12);color:var(--nd-success);border:1px solid rgba(74,222,128,.3)">ativo</span></td></tr>
-      <tr><td>6</td><td><strong>Tarefas do Discovery</strong></td><td>Negociação movida pra Discovery</td><td>Cria "Montar proposta" + "Subir a transcrição da reunião"</td><td><span class="tagfield" style="background:rgba(74,222,128,.12);color:var(--nd-success);border:1px solid rgba(74,222,128,.3)">ativo</span></td></tr>
+      <tr><td>5</td><td><strong>Cadência do Playbook</strong></td><td>Negociação movida pra Proposta</td><td>Cria tarefa "Follow-up de proposta" com prazo +48h (na Negociação: "Cobrar assinatura" +3 dias)</td><td><span class="tagfield" style="background:rgba(251,191,36,.12);color:var(--nd-warning);border:1px solid rgba(251,191,36,.3)">parcial</span></td></tr>
+      <tr><td>6</td><td><strong>Tarefas do Discovery</strong></td><td>Negociação movida pra Discovery</td><td>Cria "Montar proposta" + "Subir a transcrição da reunião"</td><td><span class="tagfield" style="background:rgba(251,191,36,.12);color:var(--nd-warning);border:1px solid rgba(251,191,36,.3)">parcial</span></td></tr>
       <tr><td>7</td><td><strong>Proposta esfriando</strong></td><td>Negociação parada em Proposta há 3 dias</td><td>Notifica o dono + cria tarefa "Retomar contato"</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
       <tr><td>8</td><td><strong>Alerta de inatividade à gestão</strong></td><td>Negociação aberta parada 5–7 dias sem tarefa nem contato</td><td>E-mail pro gestor com a lista</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
       <tr><td>9</td><td><strong>Previsão de fechamento vencida</strong></td><td>Negociação aberta com Data de Previsão de Fechamento no passado</td><td>Cria tarefa "Decidir: ganho, perdido ou novo prazo"</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
-      <tr><td>10</td><td><strong>Handover no Fechado</strong></td><td>Negociação marcada como ganha</td><td>Cria as tarefas de handover (financeiro, jurídico, kick-off) + e-mail interno pro time de operação + cria a negociação espelho no futuro funil de CS/CX</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
+      <tr><td>10</td><td><strong>Handover no Fechado</strong></td><td>Negociação marcada como ganha</td><td>Cria as tarefas de handover (financeiro, jurídico, kick-off) + e-mail interno pro time de operação + cria a negociação espelho no futuro funil de CS/CX</td><td><span class="tagfield" style="background:rgba(251,191,36,.12);color:var(--nd-warning);border:1px solid rgba(251,191,36,.3)">parcial</span></td></tr>
       <tr><td>11</td><td><strong>Comemoração / repasse</strong></td><td>Negociação marcada como ganha</td><td>E-mail pro time comercial (a ND já tem uma versão disso)</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
       <tr><td>12</td><td><strong>Reengajamento por motivo de perda</strong></td><td>Negociação perdida com motivo X (volta o dado pro Marketing)</td><td>"Não está no timing" → nutrição de 2–3 meses · "Achou o valor alto" → oferta com condição especial <span style="opacity:.7">(caso RD: cupom de 10% recuperou 20–30% das perdas por preço)</span></td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
       <tr><td>13</td><td><strong>Painel próprio / BI</strong></td><td>Webhook: negociação criada ou atualizada</td><td>POST pro n8n / Make / planilha viva → monta forecast e indicadores fora do RD</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
     </tbody>
   </table></div>
-  <div class="callout warn" style="margin-top:12px">
-    <span class="lbl">Confirmar com Nathan</span>
-    <p>A marcação "ativo" nas linhas 1, 5 e 6 é a leitura desta atualização a partir do que foi relatado no chat — vale confirmar direto em Configurações → Automações do RD CRM se o gatilho e a ação batem exatamente com o que está descrito aqui (nome da tarefa, prazo), pra esta tabela não ficar defasada da configuração real.</p>
-  </div>
   <div class="callout" style="margin-top:12px">
     <span class="lbl">Ordem de implementação sugerida — o que falta</span>
-    <p>Começar por <strong>2 e 7</strong> (SLA de resposta e proposta esfriando — fecham o ciclo de "não esfriar" que 1, 5 e 6 começaram). Depois <strong>4, 8, 9</strong> (disciplina de dado). Por último <strong>10, 12, 13</strong> (dependem do funil de CS/CX e de integração externa).</p>
+    <p>Completar as <strong>parciais</strong> primeiro (1: e-mail de boas-vindas · 5: prazo diferenciado de follow-up · 6: confirmar conteúdo real com Nathan · 10: e-mail interno + espelho no funil de CS/CX). Depois <strong>2 e 7</strong> (SLA de resposta e proposta esfriando). Depois <strong>4, 8, 9</strong> (disciplina de dado). Por último <strong>12, 13</strong> (dependem de integração externa).</p>
   </div>
 </div></section>
 
 <section class="block" id="sec-autobacklog"><div class="wrap">
-  <p class="overline">04</p>
+  <p class="overline">05</p>
   <h2>O que revisar e construir</h2>
   <div class="gacc">
     <div class="gacc-item warn">
