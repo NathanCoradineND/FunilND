@@ -1,0 +1,1650 @@
+<title>MVP Funil Nação Digital</title>
+<meta name="description" content="MVP do funil de vendas Nação Digital: funil interativo por etapa, auditoria de campos personalizados do RD CRM, e como usar MCP e API pra puxar dado sem digitar tudo de novo.">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --nd-purple:#7B3FE4;--nd-purple-light:#9B6AEF;--nd-purple-dark:#5A2DB8;
+    --nd-bg:#0A0A0A;--nd-card:#161728;--nd-card-hover:#1E2038;
+    --nd-white:#fff;--nd-g200:#D1D1DB;--nd-g300:#A0A0B0;--nd-g400:#6B6B80;--nd-g500:#45455A;
+    --nd-success:#4ADE80;--nd-warning:#FBBF24;--nd-error:#F87171;--nd-info:#60A5FA;
+    --nd-radius-sm:8px;--nd-radius:14px;--nd-radius-lg:20px;--nd-radius-pill:50px;
+    --nd-font:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --nd-mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--nd-font);background:var(--nd-bg);color:var(--nd-white);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--nd-purple-light)}
+  h1,h2,h3,h4{line-height:1.2;margin:0;font-weight:700;text-wrap:balance}
+  h1{font-size:clamp(1.8rem,4.6vw,2.6rem);font-weight:800}
+  h2{font-size:clamp(1.3rem,3vw,1.7rem)}
+  h3{font-size:1.1rem;font-weight:700}
+  h4{font-size:.98rem;font-weight:700}
+  p{margin:.5em 0}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 clamp(1rem,4vw,2.5rem)}
+  .prose{max-width:70ch}
+  button{font-family:inherit}
+
+  header.top{position:sticky;top:0;z-index:40;background:rgba(10,10,10,.9);backdrop-filter:blur(12px);border-bottom:1px solid rgba(69,69,90,.3)}
+  header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-top:12px;padding-bottom:12px}
+  .logo{height:24px;width:auto}
+  .logo-fb{display:none;align-items:center;gap:8px}
+  .logo-fb b{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;background:linear-gradient(135deg,#7B3FE4,#9B6AEF);font-size:12px}
+  .doc-tag{font-family:var(--nd-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--nd-warning);border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.08);border-radius:var(--nd-radius-pill);padding:4px 12px}
+
+  /* tabs */
+  .tabbar{position:sticky;top:49px;z-index:39;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(123,63,228,.15)}
+  .tabbar .wrap{display:flex;gap:4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tabbar .wrap::-webkit-scrollbar{display:none}
+  .tab-btn{padding:13px 16px;font-family:var(--nd-mono);font-size:11.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--nd-g300);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0}
+  .tab-btn:hover{color:#fff}
+  .tab-btn.active{color:var(--nd-purple-light);border-bottom-color:var(--nd-purple)}
+  .panel{display:none}
+  .panel.active{display:block}
+
+  .subnav{display:none;position:sticky;top:93px;z-index:38;background:rgba(10,10,10,.96);backdrop-filter:blur(10px);border-bottom:1px solid rgba(123,63,228,.1)}
+  .subnav.active{display:block}
+  .subnav .wrap{display:flex;flex-wrap:wrap;gap:8px;padding:9px clamp(1rem,4vw,2.5rem)}
+  .subnav a{font-family:var(--nd-mono);font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--nd-g300);border:1px solid rgba(255,255,255,.12);border-radius:99px;padding:5px 12px;text-decoration:none;white-space:nowrap}
+  .subnav a:hover{background:rgba(123,63,228,.12);color:#fff;border-color:rgba(123,63,228,.4)}
+
+  .hero{padding:36px 0 28px;position:relative;overflow:hidden;border-bottom:1px solid rgba(123,63,228,.1)}
+  .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 30% 0%,rgba(123,63,228,.16) 0%,transparent 65%);pointer-events:none}
+  .hero-badge{display:inline-flex;gap:8px;align-items:center;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.35);border-radius:var(--nd-radius-lg);padding:5px 14px;font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--nd-warning)}
+  .hero h1{margin:14px 0 10px}
+  .hero p{color:var(--nd-g300);font-size:1rem;max-width:66ch}
+
+  section.block{padding:34px 0;border-bottom:1px solid rgba(123,63,228,.08);scroll-margin-top:145px}
+  .overline{font-family:var(--nd-mono);font-size:10.5px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--nd-purple-light);margin-bottom:8px}
+  .sec-lead{color:var(--nd-g300);max-width:70ch;margin-bottom:16px;font-size:.96rem}
+
+  /* etapa x tarefa */
+  .vsx{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+  .vsx-card{flex:1 1 240px;border-radius:var(--nd-radius);padding:12px 16px;font-size:.86rem;cursor:pointer;transition:filter .15s ease}
+  .vsx-card:hover{filter:brightness(1.15)}
+  .vsx-card.e{background:rgba(123,63,228,.09);border:1px solid rgba(123,63,228,.3)}
+  .vsx-card.t{background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.28)}
+  .vsx-card b{font-family:var(--nd-mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;display:flex;align-items:center;justify-content:space-between}
+  .vsx-card.e b{color:var(--nd-purple-light)}
+  .vsx-card.t b{color:var(--nd-info)}
+  .vsx-card .hint{font-size:9px;opacity:.6;font-weight:400;text-transform:none;letter-spacing:0}
+  .vsx-card span.desc{display:block;color:var(--nd-g300);margin-top:3px}
+  .vsx-ex{display:none;margin-top:8px;padding-top:8px;border-top:1px dashed rgba(255,255,255,.12);font-size:.82rem;color:var(--nd-g200)}
+  .vsx-card.open .vsx-ex{display:block}
+  .vsx-card.open .hint{display:none}
+
+  /* funnel — pushes to the side */
+  .funnel-area{display:flex;gap:24px;align-items:flex-start;margin-top:20px;width:100%}
+  .funnel-col{flex:1 1 100%;max-width:640px;margin:0 auto;transition:flex-basis .35s ease,max-width .35s ease,margin .35s ease}
+  .funnel-area.expanded .funnel-col{flex:0 0 210px;max-width:210px;margin:0}
+  .fband{position:relative;height:82px;margin-bottom:3px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;width:100%;color:#fff;transition:filter .2s ease,height .3s ease,transform .2s ease,box-shadow .3s ease}
+  .fband:hover{filter:brightness(1.12);transform:scale(1.015)}
+  .fband.active{filter:brightness(1.2);box-shadow:0 0 28px rgba(155,106,239,.55)}
+  .fband:focus-visible{outline:2px solid #fff;outline-offset:-3px}
+  .fb0{clip-path:polygon(0% 0%,100% 0%,92% 100%,8% 100%);background:linear-gradient(135deg,#9B6AEF,#7B3FE4)}
+  .fb1{clip-path:polygon(8% 0%,92% 0%,84% 100%,16% 100%);background:linear-gradient(135deg,#8B57E8,#6C36CC)}
+  .fb2{clip-path:polygon(16% 0%,84% 0%,76% 100%,24% 100%);background:linear-gradient(135deg,#7B49DE,#5F2FBE)}
+  .fb3{clip-path:polygon(24% 0%,76% 0%,68% 100%,32% 100%);background:linear-gradient(135deg,#6C3FD2,#522AAE)}
+  .fb4{clip-path:polygon(32% 0%,68% 0%,60% 100%,40% 100%);background:linear-gradient(135deg,#2FAE6E,#1F8C58)}
+  .fband .fc{position:relative;z-index:2;text-align:center;padding:0 10px;display:flex;flex-direction:column;gap:6px;width:100%}
+  .fband .ft{font-weight:800;font-size:1rem;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .fband .fshort{display:none;font-weight:800;font-size:1.1rem;font-family:var(--nd-mono)}
+  .fband .fs{font-size:.72rem;opacity:.85;font-weight:400}
+  .funnel-area.expanded .fband{height:58px}
+  .funnel-area.expanded .fband .fs{display:none}
+  .funnel-area.expanded .fband .ft{display:none}
+  .funnel-area.expanded .fband .fshort{display:block}
+  .funnel-note{text-align:center;color:var(--nd-g400);font-size:.8rem;margin-top:10px}
+  .funnel-area.expanded .funnel-note{display:none}
+  /* animated arrows between bands, pointing down through the funnel */
+  .fband:not(.fb4)::after{content:"";position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:8px solid rgba(255,255,255,.6);z-index:5;filter:drop-shadow(0 0 3px rgba(123,63,228,.6));animation:bounceDown 1.6s ease-in-out infinite}
+  .fband:nth-child(2)::after{animation-delay:.15s}
+  .fband:nth-child(3)::after{animation-delay:.3s}
+  .fband:nth-child(4)::after{animation-delay:.45s}
+  .funnel-area.expanded .fband::after{display:none}
+  @keyframes bounceDown{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(5px)}}
+
+  .detail-col{flex:0 0 0%;max-width:0;overflow:hidden;opacity:0;transition:opacity .3s ease .05s;display:flex;justify-content:flex-start}
+  .funnel-area.expanded .detail-col{flex:1 1 auto;max-width:none;opacity:1;overflow:visible}
+  .detail-panel{display:none;background:var(--nd-card);border:1px solid rgba(123,63,228,.18);border-radius:var(--nd-radius-lg);padding:18px 24px;width:100%}
+  .detail-panel .obj,.detail-panel p.v,.detail-panel li,.detail-panel .chat,.detail-panel .auto-card,.detail-panel .callout-mini{max-width:68ch}
+  .detail-panel.active{display:block}
+  .dhead{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .dhead .num{width:34px;height:34px;border-radius:9px;background:var(--nd-purple);display:flex;align-items:center;justify-content:center;font-weight:800;font-family:var(--nd-mono);flex-shrink:0;font-size:.85rem}
+  .dhead h3{flex:1;font-size:1.05rem}
+  .dhead small{display:block;font-weight:400;font-size:.75rem;color:var(--nd-g400);margin-top:2px}
+  .dclose{background:none;border:1px solid rgba(255,255,255,.15);color:var(--nd-g300);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:.9rem;line-height:1;flex-shrink:0}
+  .dclose:hover{color:#fff;border-color:rgba(255,255,255,.35)}
+  .detail-panel .obj{font-size:.87rem;color:var(--nd-g200);margin-top:8px}
+  .detail-panel .obj b{color:#fff}
+  .k{font-family:var(--nd-mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;display:block;margin:13px 0 6px}
+  .k.acoes{color:var(--nd-info)}
+  .k.tarefas{color:var(--nd-purple-light)}
+  .k.gatilho{color:var(--nd-success)}
+  .k.perda{color:var(--nd-error)}
+  .k.prazo{color:var(--nd-warning)}
+  .k.auto{color:#fff}
+  .detail-panel ol,.detail-panel ul{margin:0;padding-left:1.05rem}
+  .detail-panel li{font-size:.84rem;color:var(--nd-g200);margin:.28em 0}
+  .detail-panel p.v{font-size:.84rem;color:var(--nd-g200);margin:0}
+  .chat{background:var(--nd-bg);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 10px;font-size:.8rem;color:var(--nd-g300);margin:.4em 0}
+  .chat b{color:var(--nd-purple-light);font-family:var(--nd-mono);font-size:.63rem;text-transform:uppercase;display:block;margin-bottom:2px}
+  .pills{display:flex;flex-wrap:wrap;gap:5px}
+  .pill{font-family:var(--nd-mono);font-size:10px;padding:2px 8px;border-radius:var(--nd-radius-pill);border:1px solid rgba(248,113,113,.25);color:var(--nd-error);background:rgba(248,113,113,.07)}
+  .sla-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+  .sla-box{background:var(--nd-bg);border:1px solid rgba(251,191,36,.25);border-radius:8px;padding:6px 10px;font-size:.78rem;flex:1 1 130px}
+  .sla-box b{color:var(--nd-warning);font-family:var(--nd-mono);font-size:.62rem;text-transform:uppercase;display:block}
+  .fc-note{font-size:.78rem;color:var(--nd-warning);margin:.5em 0 0;max-width:68ch}
+  .fc-note strong{color:#fff}
+  .auto-card{background:var(--nd-bg);border-left:3px solid var(--nd-purple);border-radius:0 8px 8px 0;padding:8px 11px;margin:.4em 0;font-size:.8rem;color:var(--nd-g200)}
+  .auto-card b{display:block;color:#fff;font-size:.8rem;margin-bottom:2px}
+  .callout-mini{background:rgba(96,165,250,.07);border-left:3px solid var(--nd-info);border-radius:0 8px 8px 0;padding:9px 11px;margin:8px 0;font-size:.82rem}
+  .callout-mini .lbl{font-family:var(--nd-mono);font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--nd-g400);display:block;margin-bottom:3px}
+  .callout-mini p{margin:0;color:var(--nd-g200)}
+  @media (max-width:820px){
+    .funnel-area,.funnel-area.expanded{flex-direction:column}
+    .funnel-area.expanded .funnel-col{max-width:100%;flex:0 0 auto;margin:0 auto}
+    .funnel-area.expanded .fband{height:64px}
+    .funnel-area.expanded .fband .fs{display:block}
+    .funnel-area.expanded .fband .ft{display:block}
+    .funnel-area.expanded .fband .fshort{display:none}
+    .funnel-area.expanded .detail-col{flex:1 1 auto;max-width:100%}
+    .detail-panel{max-width:100%}
+  }
+
+  .gacc{margin-top:14px;border:1px solid rgba(123,63,228,.16);border-radius:var(--nd-radius);overflow:hidden}
+  .gacc-item{border-bottom:1px solid rgba(123,63,228,.12)}
+  .gacc-item:last-child{border-bottom:none}
+  .gacc-head{width:100%;display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--nd-card);border:none;color:var(--nd-g200);font-size:.86rem;text-align:left;cursor:pointer}
+  .gacc-head:hover{background:var(--nd-card-hover)}
+  .gacc-head .d{width:6px;height:6px;border-radius:50%;background:var(--nd-purple-light);flex-shrink:0}
+  .gacc-item.warn .gacc-head .d{background:var(--nd-warning)}
+  .gacc-head .tit{flex:1}
+  .gacc-head .tag{font-family:var(--nd-mono);font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--nd-g400);border:1px solid rgba(255,255,255,.15);border-radius:99px;padding:2px 7px;flex-shrink:0}
+  .gacc-head .chev{color:var(--nd-g400);transition:transform .2s ease;flex-shrink:0}
+  .gacc-item.open .gacc-head .chev{transform:rotate(180deg)}
+  .gacc-body{display:none;padding:0 16px 14px 32px;background:var(--nd-bg);font-size:.84rem;color:var(--nd-g300)}
+  .gacc-item.open .gacc-body{display:block}
+  .gacc-body p{margin:.3em 0}
+
+  /* glossary tooltip — hover a term inline */
+  .gl{border-bottom:1px dotted var(--nd-purple-light);cursor:help;position:relative;color:inherit}
+  .gl .pop{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);width:230px;background:var(--nd-card);border:1px solid rgba(123,63,228,.3);border-radius:8px;padding:9px 11px;font-size:.78rem;font-weight:400;color:var(--nd-g200);line-height:1.5;box-shadow:0 8px 24px rgba(0,0,0,.45);z-index:30;text-align:left;white-space:normal}
+  .gl:hover .pop,.gl:focus .pop,.gl.open .pop{display:block}
+  .gl b{color:var(--nd-purple-light)}
+
+  /* copy chip — click to copy an MCP prompt example */
+  .copy-chip{display:inline-flex;align-items:center;gap:6px;background:var(--nd-bg);border:1px solid rgba(155,106,239,.3);border-radius:8px;padding:5px 10px;font-size:.82rem;color:var(--nd-g200);cursor:pointer;margin:3px 5px 3px 0;font-family:var(--nd-font);text-align:left}
+  .copy-chip:hover{border-color:var(--nd-purple-light);color:#fff}
+  .copy-chip .ic{font-family:var(--nd-mono);font-size:.75rem;color:var(--nd-purple-light);flex-shrink:0}
+  .copy-chip.copied{border-color:var(--nd-success);color:var(--nd-success)}
+  .copy-chip.copied .ic{color:var(--nd-success)}
+  .chipwrap{display:flex;flex-wrap:wrap}
+
+  /* table filter */
+  .tfilter{width:100%;max-width:360px;margin-top:14px;background:var(--nd-bg);border:1px solid rgba(123,63,228,.25);border-radius:8px;padding:8px 12px;font-family:var(--nd-font);font-size:.85rem;color:#fff}
+  .tfilter:focus{outline:none;border-color:var(--nd-purple-light)}
+  .tfilter::placeholder{color:var(--nd-g400)}
+  .tfhint{font-size:.75rem;color:var(--nd-g400);margin-top:5px}
+
+  /* field mapping — Marketing → CRM as an interaction */
+  .fmap{margin-top:14px;display:flex;flex-direction:column;gap:7px}
+  .fmap-head{display:grid;grid-template-columns:1fr 34px 1fr;gap:10px;padding:0 14px;font-family:var(--nd-mono);font-size:9px;text-transform:uppercase;letter-spacing:.09em;color:var(--nd-g400)}
+  .fmap-head span:first-child{color:var(--nd-info)}
+  .fmap-head span:last-child{color:var(--nd-purple-light)}
+  .maprow{display:grid;grid-template-columns:1fr 34px 1fr;gap:10px;align-items:center;background:var(--nd-card);border:1px solid rgba(123,63,228,.14);border-radius:10px;padding:10px 14px}
+  .maprow .mapfrom{font-size:.86rem;color:var(--nd-g200)}
+  .maprow .mapar{justify-self:center;color:var(--nd-purple-light);font-weight:800;font-size:1rem}
+  .maprow .mapto{font-size:.86rem;color:#fff;font-weight:600}
+  .maprow .mapto code{font-size:.78em}
+  .maprow .mapnote{grid-column:1/-1;font-size:.76rem;color:var(--nd-g400);border-top:1px dashed rgba(255,255,255,.09);padding-top:6px;margin-top:1px}
+  .maprow.warn{border-color:rgba(248,113,113,.35);background:rgba(248,113,113,.05)}
+  @media (max-width:620px){
+    .fmap-head{display:none}
+    .maprow{grid-template-columns:1fr;gap:3px;text-align:left}
+    .maprow .mapar{justify-self:start;transform:rotate(90deg)}
+  }
+
+  .scroll{overflow-x:auto;margin-top:14px}
+  table{width:100%;border-collapse:collapse;font-size:.83rem;min-width:640px}
+  th{text-align:left;color:var(--nd-g400);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.05em;padding:9px 11px;border-bottom:1px solid rgba(123,63,228,.18)}
+  td{padding:9px 11px;border-bottom:1px solid rgba(123,63,228,.07);color:var(--nd-g200);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  code{font-family:var(--nd-mono);font-size:.8em;background:rgba(123,63,228,.1);color:#fff;padding:1px 6px;border-radius:5px}
+  td.yes{color:var(--nd-success);font-weight:700;text-align:center}
+  td.no{color:var(--nd-error);font-weight:700;text-align:center}
+  table.resumo td:first-child{font-weight:600;color:#fff;border-right:1px solid rgba(123,63,228,.1)}
+  table.resumo td:nth-child(2){background:rgba(96,165,250,.05)}
+  table.resumo td:nth-child(3){background:rgba(74,222,128,.05)}
+  table.resumo td:nth-child(4){background:rgba(248,113,113,.05)}
+  .tagfield{font-family:var(--nd-mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:99px;display:inline-block}
+  .tagfield.nd{background:rgba(123,63,228,.12);color:var(--nd-purple-light);border:1px solid rgba(123,63,228,.3)}
+  .tagfield.pr{background:rgba(96,165,250,.12);color:var(--nd-info);border:1px solid rgba(96,165,250,.3)}
+  .tagfield.geral{background:rgba(160,160,176,.12);color:var(--nd-g300);border:1px solid rgba(160,160,176,.3)}
+  .tagfield.bug{background:rgba(248,113,113,.12);color:var(--nd-error);border:1px solid rgba(248,113,113,.3)}
+
+  .cards2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:14px}
+  .c2{background:var(--nd-card);border:1px solid rgba(123,63,228,.14);border-radius:var(--nd-radius);padding:14px 16px}
+  .c2 h4{font-size:.9rem;margin-bottom:5px}
+  .c2 p{font-size:.85rem;color:var(--nd-g300);margin:0}
+
+  .callout{background:rgba(96,165,250,.06);border-left:3px solid var(--nd-info);border-radius:0 var(--nd-radius-sm) var(--nd-radius-sm) 0;padding:14px 18px;margin:16px 0}
+  .callout.warn{background:rgba(251,191,36,.07);border-left-color:var(--nd-warning)}
+  .callout.err{background:rgba(248,113,113,.07);border-left-color:var(--nd-error)}
+  .callout.ok{background:rgba(74,222,128,.07);border-left-color:var(--nd-success)}
+  .callout.brand{background:rgba(123,63,228,.08);border-left-color:var(--nd-purple)}
+  .callout .lbl{font-family:var(--nd-mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--nd-g400);display:block;margin-bottom:4px}
+  .callout p{margin:.2em 0;font-size:.9rem;color:var(--nd-g200)}
+
+  footer{padding:24px 0 56px;color:var(--nd-g500);font-size:11px}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="top"><div class="wrap">
+  <img class="logo" src="https://nacao.digital/wp-content/uploads/thegem-logos/logo_185a0c52bbf9a63b8aa4f897776bad60_1x.png" alt="Nação Digital" onerror="this.style.display='none';document.getElementById('lfb').style.display='flex'">
+  <div class="logo-fb" id="lfb"><b>ND</b></div>
+  <span class="doc-tag">MVP</span>
+</div></header>
+
+<nav class="tabbar"><div class="wrap">
+  <button class="tab-btn active" data-tab="funil" onclick="switchTab('funil',this)">Funil ND</button>
+  <button class="tab-btn" data-tab="metricas" onclick="switchTab('metricas',this)">Métricas &amp; Acompanhamento</button>
+  <button class="tab-btn" data-tab="campos" onclick="switchTab('campos',this)">Campos Personalizados</button>
+  <button class="tab-btn" data-tab="automacoes" onclick="switchTab('automacoes',this)">Automações</button>
+  <button class="tab-btn" data-tab="mcp" onclick="switchTab('mcp',this)">MCP e API</button>
+  <button class="tab-btn" data-tab="mcpuso" onclick="switchTab('mcpuso',this)">Uso Prático de MCP</button>
+  <button class="tab-btn" data-tab="extras" onclick="switchTab('extras',this)">Ferramentas e Funcionalidades Adicionais</button>
+</div></nav>
+
+<nav class="subnav active" id="subnav-funil"><div class="wrap">
+  <a href="#sec-etapas">Etapas</a>
+  <a href="#sec-funil">Funil</a>
+  <a href="#sec-resumo">Resumo</a>
+  <a href="#sec-evolucao">Sugestões de evolução</a>
+</div></nav>
+<nav class="subnav" id="subnav-metricas"><div class="wrap">
+  <a href="#sec-metricas-porque">Por que medir</a>
+  <a href="#sec-metricas-funil">Métricas do funil</a>
+  <a href="#sec-metricas-qualidade">Qualidade de dado</a>
+  <a href="#sec-metricas-onde">Onde olhar no RD</a>
+  <a href="#sec-metricas-cadencia">Cadência de acompanhamento</a>
+  <a href="#sec-metricas-pendencias">Decisões e pendências — 08/09</a>
+</div></nav>
+<nav class="subnav" id="subnav-campos"><div class="wrap">
+  <a href="#sec-nativo">Nativo e Personalizado</a>
+  <a href="#sec-integracao">Integração Marketing → CRM</a>
+  <a href="#sec-achados">Achados principais</a>
+  <a href="#sec-negociacao">Negociações</a>
+  <a href="#sec-empresa">Empresa</a>
+  <a href="#sec-contato">Contatos</a>
+</div></nav>
+<nav class="subnav" id="subnav-automacoes"><div class="wrap">
+  <a href="#sec-autocomo">Como o lead vira negociação</a>
+  <a href="#sec-autofluxos">Fluxos de hoje</a>
+  <a href="#sec-autocatalogo">Catálogo de automações</a>
+  <a href="#sec-autobacklog">O que revisar e construir</a>
+</div></nav>
+<nav class="subnav" id="subnav-mcp"><div class="wrap">
+  <a href="#sec-oquee">O que é cada um</a>
+  <a href="#sec-configurar">Como configurar</a>
+  <a href="#sec-comparar">MCP x API</a>
+  <a href="#sec-seguranca">Segurança e rotina</a>
+</div></nav>
+<nav class="subnav" id="subnav-mcpuso"><div class="wrap">
+  <a href="#sec-perguntas">Consultar por etapa</a>
+  <a href="#sec-funiltarefas">Gestão do funil e tarefas</a>
+  <a href="#sec-atualizar">Atualizar dados</a>
+  <a href="#sec-rotina">Rotina facilitada</a>
+  <a href="#sec-limites">Até onde dá pra ir</a>
+</div></nav>
+<nav class="subnav" id="subnav-extras"><div class="wrap">
+  <a href="#sec-extra-porque">Por que esta aba</a>
+  <a href="#sec-extra-re">Rê — Copiloto de IA</a>
+  <a href="#sec-extra-whats">Extensão de WhatsApp</a>
+  <a href="#sec-extra-ia">Add-on IA para Negociações</a>
+  <a href="#sec-extra-com">E-mail no card</a>
+  <a href="#sec-extra-conversas">RD Conversas</a>
+</div></nav>
+
+<!-- ===================== TAB: FUNIL ===================== -->
+<div class="panel active" id="tab-funil">
+
+<section class="hero"><div class="wrap">
+  <span class="hero-badge">MVP · Nação Digital</span>
+  <h1>MVP Funil Nação Digital</h1>
+  <p class="prose">Considerando as etapas que já existem hoje, de <strong><span class="gl">SQL<span class="pop"><b>Sales Qualified Lead</b> — lead que já demonstrou intenção real de compra e virou oportunidade de venda.</span></span></strong> a <strong>Fechado</strong>, este é o MVP com a estrutura completa proposta pro funil — objetivo, gatilho, prazo, automações e motivos de perda de cada etapa — pra validar com o time.</p>
+  <div class="callout">
+    <span class="lbl">Por que este MVP existe</span>
+    <p>Hoje a operação falha em registrar: não sabemos com clareza em que etapa cada lead está, se um lead que não deveria ter entrado no funil está sendo corrigido, ou o que está parado sem ninguém perceber. Este documento resolve isso — não é só "explicar o funil", é criar o hábito de registrar e medir. A aba <strong>Métricas &amp; Acompanhamento</strong> fecha o ciclo: o que medir, onde olhar no RD e o ritmo de reunião que mantém isso vivo.</p>
+  </div>
+</div></section>
+
+<section class="block" id="sec-etapas"><div class="wrap">
+  <p class="overline">01</p>
+  <h2>Etapa ≠ Tarefa</h2>
+  <div class="vsx">
+    <div class="vsx-card e" onclick="this.classList.toggle('open')">
+      <b>Etapa <span class="hint">clique</span></b>
+      <span class="desc">Onde o cliente está agora. Só 5 existem hoje.</span>
+      <div class="vsx-ex">Ex.: "esse cliente está em <strong><span class="gl">Discovery<span class="pop">Etapa de diagnóstico — reunião pra entender a dor e o contexto do cliente antes de montar a proposta.</span></span></strong>" = já fizemos a reunião de diagnóstico, ainda não mandamos proposta.</div>
+    </div>
+    <div class="vsx-card t" onclick="this.classList.toggle('open')">
+      <b>Tarefa <span class="hint">clique</span></b>
+      <span class="desc">O que você faz dentro da etapa — pode ter várias.</span>
+      <div class="vsx-ex">Ex.: dentro de Discovery, suas tarefas são ligar, anotar a dor, marcar a próxima reunião.</div>
+    </div>
+  </div>
+</div></section>
+
+<section class="block" id="sec-funil"><div class="wrap">
+  <p class="overline">02</p>
+  <h2>O funil — clique numa etapa</h2>
+  <p class="sec-lead">O funil encolhe e abre o painel ao lado — objetivo, descrição, ações, tarefas, gatilho, prazo, automações e motivos de perda.</p>
+
+  <div class="funnel-area" id="funnelArea">
+    <div class="funnel-col">
+      <button class="fband fb0" data-id="d-sql" onclick="openPanel('d-sql', this)"><span class="fc"><span class="ft">SQL</span><span class="fshort">S</span><span class="fs">lead quente, aguardando 1º contato</span></span></button>
+      <button class="fband fb1" data-id="d-discovery" onclick="openPanel('d-discovery', this)"><span class="fc"><span class="ft">Discovery</span><span class="fshort">D</span><span class="fs">reunião de descoberta</span></span></button>
+      <button class="fband fb2" data-id="d-proposta" onclick="openPanel('d-proposta', this)"><span class="fc"><span class="ft">Proposta</span><span class="fshort">P</span><span class="fs">com o decisor, em decisão</span></span></button>
+      <button class="fband fb3" data-id="d-negociacao" onclick="openPanel('d-negociacao', this)"><span class="fc"><span class="ft">Negociação</span><span class="fshort">N</span><span class="fs">ajeitando os últimos detalhes</span></span></button>
+      <button class="fband fb4" data-id="d-fechado" onclick="openPanel('d-fechado', this)"><span class="fc"><span class="ft">Fechado 🎉</span><span class="fshort">F</span><span class="fs">virou cliente</span></span></button>
+      <p class="funnel-note">Cada etapa mais estreita = menos negociações chegam até ali. É assim que se enxerga o gargalo.</p>
+    </div>
+
+    <div class="detail-col">
+      <div class="detail-panel" id="d-sql">
+        <div class="dhead"><span class="num">S</span><h3>SQL<small>lead quente, aguardando 1º contato</small></h3><button class="dclose" onclick="closePanel()">✕</button></div>
+        <p class="obj"><b>Objetivo:</b> confirmar que o pedido é real e marcar a agenda o mais rápido possível.</p>
+        <p class="obj"><b>Descrição:</b> hoje todo lead aqui veio de um canal de intenção ativa — "Fale com um consultor" ou WhatsApp. São leads muito quentes, já pedindo proposta. Não é hora de convencer, é hora de agendar rápido.</p>
+        <span class="k acoes">Ações</span>
+        <ol><li>Confirmar recebimento e perguntar a necessidade específica</li><li>Perguntar sobre a empresa (o que faz, porte)</li><li>Perguntar se tem mais alguém na decisão</li><li>Até 3 tentativas de contato em canais diferentes, se não responder</li><li>Marcar a agenda do Discovery</li></ol>
+        <div class="chat"><b>Mensagem</b>"Oi, [nome]! Recebi seu pedido de proposta. Pra eu já vir preparado: qual a necessidade específica hoje? E me conta rapidinho sobre a empresa — segmento e porte."</div>
+        <span class="k tarefas">Tarefas no RD CRM</span>
+        <ul><li>1ª tentativa de contato (automática)</li><li>2ª tentativa</li><li>3ª tentativa</li><li>Marcar reunião de Discovery</li></ul>
+        <span class="k gatilho">Gatilho de passagem</span>
+        <p class="v">Falou com a pessoa E marcou o Discovery. Preencher: origem, empresa, cargo/nome, data da reunião.</p>
+        <span class="k prazo">Prazo</span>
+        <div class="sla-row"><div class="sla-box"><b>1º contato</b>até 30 min</div><div class="sla-box"><b>Agenda do Discovery</b>até 1 dia útil</div><div class="sla-box"><b>Esfriando</b>1 dia sem retorno</div></div>
+        <p class="fc-note"><strong>Regra dos 5 minutos (RD):</strong> a chance de qualificar cai 21× quando o 1º contato passa de 5 pra 30 min. Como esse lead já pediu proposta, o alvo é responder <strong>na hora</strong>, não "em 1 dia".</p>
+        <p class="fc-note">+ preencher a <strong>Data de Previsão de Fechamento</strong> (campo nativo do RD) já aqui — é o campo que mais importa pro forecast do funil inteiro.</p>
+        <span class="k auto">Automação sugerida</span>
+        <div class="auto-card"><b>Confirmação imediata</b>Ao entrar em SQL: e-mail "Recebemos seu pedido! Em breve um consultor vai te chamar" + tarefa de 1ª tentativa já criada.</div>
+        <span class="k perda">Motivos de perda</span>
+        <div class="pills"><span class="pill">Cliente não retornou</span><span class="pill">Não tem Perfil</span><span class="pill">Concorre com cliente da casa</span><span class="pill">Sumiu do Mapa</span></div>
+      </div>
+
+      <div class="detail-panel" id="d-discovery">
+        <div class="dhead"><span class="num">D</span><h3>Discovery<small>reunião de descoberta</small></h3><button class="dclose" onclick="closePanel()">✕</button></div>
+        <p class="obj"><b>Objetivo:</b> entender a necessidade a fundo e o cliente topar seguir para uma proposta comercial — preço ainda não entra aqui.</p>
+        <p class="obj"><b>Descrição:</b> o cliente já demonstrou interesse real no SQL. Aqui é a etapa de diagnóstico — reunião de descoberta, mapeamento de dor e contexto, sem falar de valores.</p>
+        <span class="k acoes">Ações</span>
+        <ol><li>Realizar a reunião de Discovery</li><li>Pedir material complementar/documentação se faltar</li><li>Pedir 2ª reunião técnica se a complexidade for alta</li><li>Mapear decisor, orçamento aproximado e prazo</li><li>Confirmar que ele quer receber a proposta</li></ol>
+        <span class="k tarefas">Tarefas no RD CRM</span>
+        <ul><li>Realizar reunião de Discovery</li><li><strong>Subir a ata/transcrição da reunião no RD</strong> — automático com o add-on de IA para Negociações (ver aba Ferramentas e Funcionalidades Adicionais)</li><li>Pedir material complementar (se aplicável)</li><li>Montar proposta comercial</li></ul>
+        <span class="k gatilho">Gatilho de passagem</span>
+        <p class="v">Cliente confirmou que quer receber a proposta comercial.</p>
+        <span class="k prazo">Prazo</span>
+        <div class="sla-row"><div class="sla-box"><b>Alvo</b>até 7 dias</div><div class="sla-box"><b>Esfriando</b>3 dias sem retorno</div></div>
+        <p class="fc-note">+ preencher/atualizar a <strong>Data de Previsão de Fechamento</strong> nesta etapa também.</p>
+        <span class="k auto">Automação sugerida</span>
+        <div class="auto-card"><b>E-mail de preparo</b>Ao marcar a agenda: enviar prévia do que será discutido + materiais institucionais direcionados pela área/segmento do cliente.</div>
+        <span class="k perda">Motivos de perda</span>
+        <div class="pills"><span class="pill">Cliente não retornou</span><span class="pill">Sumiu do Mapa</span><span class="pill">Não está no timing</span></div>
+      </div>
+
+      <div class="detail-panel" id="d-proposta">
+        <div class="dhead"><span class="num">P</span><h3>Proposta<small>com o decisor, em decisão</small></h3><button class="dclose" onclick="closePanel()">✕</button></div>
+        <p class="obj"><b>Objetivo:</b> apresentar o valor e a solução, e conseguir o aceite pra seguir pra negociação.</p>
+        <p class="obj"><b>Descrição:</b> o diagnóstico virou proposta formal, apresentada ao vivo pro decisor — não é um PDF mandado sem contexto.</p>
+        <span class="k acoes">Ações</span>
+        <ol><li>Apresentar a proposta ao vivo</li><li>Responder objeções na reunião</li><li>Registrar o resumo/transcrição da reunião comercial na negociação</li><li>Marcar dia e hora do retorno</li></ol>
+        <div class="callout-mini"><span class="lbl">Como anexar a proposta</span><p>O RD CRM espera PDF, mas nosso modelo comercial usa proposta em <strong>HTML</strong>. Solução: link do HTML na <strong>Observação</strong> da negociação.</p></div>
+        <div class="callout-mini"><span class="lbl">Transcrição da reunião</span><p>Igual no Discovery: usar uma ferramenta de transcrição por IA na chamada e subir o resultado na negociação — não depender de anotação manual.</p></div>
+        <span class="k tarefas">Tarefas no RD CRM</span>
+        <ul><li>Montar e enviar proposta</li><li>Colar o link do HTML na Observação</li><li><strong>Subir a transcrição da reunião no RD</strong></li><li>Follow-up de proposta</li></ul>
+        <span class="k gatilho">Gatilho de passagem</span>
+        <p class="v">Cliente aceitou a proposta comercial e quer seguir com as condições.</p>
+        <span class="k prazo">Prazo</span>
+        <div class="sla-row"><div class="sla-box"><b>Alvo</b>2 dias após o Discovery</div><div class="sla-box"><b>Esfriando</b>3–5 dias sem retorno</div></div>
+        <p class="fc-note">+ atualizar a <strong>Data de Previsão de Fechamento</strong> — é nesta etapa que ela costuma ficar mais precisa.</p>
+        <span class="k auto">Automação sugerida</span>
+        <div class="auto-card"><b>Lembrete de prazo</b>Perto da data-limite (campo nativo de previsão de fechamento): "ficou com alguma dúvida? Lembrando, o prazo pra resposta é até [data]."</div>
+        <span class="k perda">Motivos de perda</span>
+        <div class="pills"><span class="pill">Achou o valor alto</span><span class="pill">Fechou com outra empresa</span><span class="pill">Não está no timing</span><span class="pill">Vai internalizar</span><span class="pill">Cliente não retornou</span></div>
+      </div>
+
+      <div class="detail-panel" id="d-negociacao">
+        <div class="dhead"><span class="num">N</span><h3>Negociação<small>ajeitando os últimos detalhes</small></h3><button class="dclose" onclick="closePanel()">✕</button></div>
+        <p class="obj"><b>Objetivo:</b> fechar prazo, escopo e condições, e levar ao contrato assinado.</p>
+        <p class="obj"><b>Descrição:</b> o cliente já disse "sim" — o que resta é jurídico, condição comercial e assinatura, não mais convencimento.</p>
+        <span class="k acoes">Ações</span>
+        <ol><li>Ajustar condição comercial e escopo</li><li>Apoiar o jurídico do cliente</li><li>Gerar o contrato</li><li>Cobrar até a assinatura</li><li>Verificar se o cliente exige outro sistema pra formalizar (portal de fornecedor, procurement)</li><li>Registrar as comunicações e conversas na negociação</li></ol>
+        <span class="k tarefas">Tarefas no RD CRM</span>
+        <ul><li>Ajustar condição comercial / escopo</li><li>Apoio jurídico</li><li>Gerar contrato</li><li>Cobrança de assinatura</li></ul>
+        <span class="k gatilho">Gatilho de passagem</span>
+        <p class="v">Contrato assinado pelas duas partes.</p>
+        <span class="k prazo">Prazo</span>
+        <div class="sla-row"><div class="sla-box"><b>Alvo / Esfriando</b>2 semanas (14 dias)</div></div>
+        <p class="fc-note">+ manter a <strong>Data de Previsão de Fechamento</strong> atualizada — é aqui que ela mais muda.</p>
+        <span class="k auto">Automação sugerida</span>
+        <div class="auto-card"><b>Acompanhamento periódico</b>"Como está? Ficou com alguma dúvida? Lembrando, prazo até [data] pra responder."</div>
+        <span class="k perda">Motivos de perda</span>
+        <div class="pills"><span class="pill">Achou o valor alto</span><span class="pill">Fechou com outra empresa</span><span class="pill">Vai internalizar</span><span class="pill">Cliente não retornou</span></div>
+      </div>
+
+      <div class="detail-panel" id="d-fechado">
+        <div class="dhead"><span class="num">F</span><h3>Fechado <span style="color:var(--nd-success)">🎉</span><small>virou cliente</small></h3><button class="dclose" onclick="closePanel()">✕</button></div>
+        <p class="obj"><b>Objetivo:</b> formalizar a venda e passar o cliente pra equipe de operação, sem nada se perder no caminho.</p>
+        <p class="obj"><b>Descrição:</b> etapa terminal do funil de vendas — o contrato já está assinado, o que falta é a transição organizada pra quem vai entregar.</p>
+        <span class="k acoes">Ações</span>
+        <ol><li>Marcar como venda ganha</li><li>Avisar o financeiro</li><li>Avisar o jurídico (se o contrato tiver cláusula que exige acompanhamento)</li><li>Avisar os times responsáveis por assumir a conta</li><li>Definir os prazos de handover</li><li>Agendar a reunião interna de handover</li><li>Agendar a reunião de kick-off com o cliente</li><li>Enviar materiais e conteúdos de boas-vindas</li></ol>
+        <span class="k tarefas">Tarefas no RD CRM</span>
+        <ul><li>Avisar financeiro</li><li>Avisar jurídico</li><li>Avisar time de operação</li><li>Agendar handover interno</li><li>Agendar kick-off com o cliente</li></ul>
+        <span class="k gatilho">Encerra quando</span>
+        <p class="v">Equipe de operação já está com o cliente e o kick-off está marcado. Etapa terminal — sem motivo de perda.</p>
+      </div>
+    </div>
+  </div>
+
+  <span class="k" style="color:var(--nd-g300);margin-top:26px">Automações globais — clique pra ver o detalhe</span>
+  <div class="gacc">
+    <div class="gacc-item">
+      <button class="gacc-head" onclick="toggleGacc(this)"><span class="d"></span><span class="tit">Nenhum card fica sem tarefa aberta</span><span class="tag">prática de gestão</span><span class="chev">⌄</span></button>
+      <div class="gacc-body"><p>Não é uma trava do RD — é hábito que o gestor cobra na revisão semanal de pipeline. Card sem tarefa é card esquecido.</p></div>
+    </div>
+    <div class="gacc-item">
+      <button class="gacc-head" onclick="toggleGacc(this)"><span class="d"></span><span class="tit">Motivo de perda é obrigatório pra marcar como perdida</span><span class="tag">já é nativo do RD</span><span class="chev">⌄</span></button>
+      <div class="gacc-body"><p>Correção de termo: o RD Station CRM não tem uma função separada de "arquivar" — o status da negociação tem 4 valores (<strong>Em andamento</strong>, <strong>Pausada</strong>, <strong>Vendida</strong>, <strong>Perdida</strong>), mas só existem dois destinos de <strong>fechamento</strong>: Ganha ou Perdida, e o sistema já exige o motivo pra marcar como Perdida. Não é algo pra configurar, é assim que o RD já funciona. Só precisamos manter a lista dos 9 motivos atualizada e bem usada.</p>
+      <p style="margin-top:8px"><strong>Em aberto:</strong> o funil ND ainda não define quando usar o status <strong>Pausada</strong> (aberta, mas parada por decisão de quem está com o card — diferente de "esfriando" por falta de atenção). Vale decidir com o time se e quando ele entra no processo.</p></div>
+    </div>
+    <div class="gacc-item">
+      <button class="gacc-head" onclick="toggleGacc(this)"><span class="d"></span><span class="tit">Campos obrigatórios por etapa</span><span class="tag">nativo · Pro/Advanced</span><span class="chev">⌄</span></button>
+      <div class="gacc-body">
+      <p>O RD CRM permite marcar campos como <strong>obrigatórios pra avançar de etapa</strong> — o sistema trava fisicamente o card se o campo não estiver preenchido. É a forma de fazer o "gatilho de passagem" de cada etapa deixar de ser combinado e virar regra.</p>
+      <p style="margin-top:8px">Um campo personalizado tem 4 níveis possíveis: <strong>Visível</strong> (aparece, mas é opcional) · <strong>Obrigatório</strong> (precisa ser preenchido, sem amarração a uma etapa) · <strong>Sempre</strong> (trava até a criação da negociação — não dá pra nem abrir o card sem preencher) · <strong>Etapa</strong> (o nível que interessa aqui: você escolhe a partir de qual etapa o campo passa a ser exigido pra avançar).</p>
+      <p style="margin-top:8px"><strong>Como configurar:</strong> Configurações → Campos Personalizados → editar o campo → nível "Etapa" → selecionar funil e etapa. Ex.: pra sair de Discovery, exigir Dor principal, Orçamento estimado e Decisor identificado.</p>
+      <p style="margin-top:8px">A página oficial da RD documenta este recurso pro plano <strong>Pro</strong>; a ND está no <strong>Advanced</strong> (tier acima), então deve estar incluso — vale só confirmar direto em Configurações antes de formalizar isso no processo.</p></div>
+    </div>
+    <div class="gacc-item">
+      <button class="gacc-head" onclick="toggleGacc(this)"><span class="d"></span><span class="tit">Lembrete de prazos vencendo</span><span class="tag">a configurar</span><span class="chev">⌄</span></button>
+      <div class="gacc-body"><p>Três frentes, mesma lógica: tarefa vencendo, proposta vencendo (usando a Data de Previsão de Fechamento) e retorno do cliente sem resposta — cada uma dispara um aviso pro responsável alguns dias antes do prazo vencer, pra ninguém descobrir o atraso só depois que já passou.</p></div>
+    </div>
+    <div class="gacc-item">
+      <button class="gacc-head" onclick="toggleGacc(this)"><span class="d"></span><span class="tit">Card parado sem toque = alerta pro responsável</span><span class="tag">nativo + a configurar</span><span class="chev">⌄</span></button>
+      <div class="gacc-body">
+      <p>São duas camadas, não uma só: <strong>Camada 1 — nativo</strong> — "Destacar negociações que estão esfriando no funil de vendas": liga por etapa, define a partir de quantos dias sem interação o card ganha destaque visual + tag de dias parado. Zero automação, zero custo, é o "esfriando" de cada etapa (seção 02) só de ligar o toggle.</p>
+      <p style="margin-top:8px"><strong>Camada 2 — automação personalizada</strong> — pra além do destaque visual: gatilho "negociação parada X dias sem contato" → cria tarefa automática pro responsável ("Retomar contato") + notifica por e-mail. Essa camada garante que o alerta chegue até quem não está de olho no Kanban naquele dia.</p></div>
+    </div>
+    <div class="gacc-item warn">
+      <button class="gacc-head" onclick="toggleGacc(this)"><span class="d"></span><span class="tit">Cobrança automática pra marcar Ganho ou Perdido quando o prazo vence e ninguém decidiu</span><span class="tag">a construir</span><span class="chev">⌄</span></button>
+      <div class="gacc-body"><p>Se a previsão de fechamento já passou e a negociação continua aberta, sem decisão, cria uma tarefa cobrando o responsável a se posicionar — ganhou, perdeu ou precisa de novo prazo.</p></div>
+    </div>
+    <div class="gacc-item warn">
+      <button class="gacc-head" onclick="toggleGacc(this)"><span class="d"></span><span class="tit">Alerta à gestão sobre demandas paradas</span><span class="tag">a construir</span><span class="chev">⌄</span></button>
+      <div class="gacc-body"><p>É a 2ª régua da automação personalizada do item anterior: diferente do alerta ao responsável, este escala direto pro gestor quando o prazo já passou e nada mudou — pra não depender só do vendedor perceber.</p></div>
+    </div>
+  </div>
+</div></section>
+
+<section class="block" id="sec-resumo"><div class="wrap">
+  <p class="overline">03</p>
+  <h2>Tabela resumo</h2>
+  <div class="scroll"><table class="resumo">
+    <thead><tr><th>Etapa</th><th style="color:var(--nd-info)">Ações</th><th style="color:var(--nd-success)">Gatilho de Passagem</th><th style="color:var(--nd-error)">Motivos de Perda</th></tr></thead>
+    <tbody>
+      <tr><td><strong>SQL</strong></td><td>Confirmar pedido e necessidade · até 3 tentativas de contato · marcar Discovery</td><td>Falou com a pessoa e marcou o Discovery</td><td>Cliente não retornou · Não tem Perfil · Concorre com cliente da casa · Sumiu do Mapa</td></tr>
+      <tr><td><strong>Discovery</strong></td><td>Realizar a reunião · pedir material/documentação se faltar · mapear decisor, orçamento e prazo</td><td>Topou receber a proposta comercial</td><td>Cliente não retornou · Sumiu do Mapa · Não está no timing</td></tr>
+      <tr><td><strong>Proposta</strong></td><td>Apresentar ao vivo · anexar link do HTML na Observação · registrar resumo da reunião · marcar retorno</td><td>Aceitou a proposta comercial</td><td>Achou o valor alto · Fechou com outra empresa · Não está no timing · Vai internalizar · Cliente não retornou</td></tr>
+      <tr><td><strong>Negociação</strong></td><td>Ajustar condições e escopo · apoiar jurídico · gerar contrato · cobrar assinatura</td><td>Contrato assinado pelas duas partes</td><td>Achou o valor alto · Fechou com outra empresa · Vai internalizar · Cliente não retornou</td></tr>
+      <tr><td><strong>Fechado</strong></td><td>Marcar venda ganha · avisar financeiro e times responsáveis · agendar handover interno e com cliente</td><td>Handover marcado com a operação</td><td>— (etapa terminal)</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout warn" style="margin-top:10px">
+    <span class="lbl">Sobre o motivo "Outros"</span>
+    <p>A RD não tem uma regra explícita de "não use Outros" — a orientação oficial (ebook de motivos de perda) é evitar motivo genérico demais, porque isso vira "lixeira" de dado e esconde o motivo real das perdas. Como ele já está cadastrado na conta, a regra mínima é: <strong>sempre escrever na Observação por que perdeu</strong>, e se "Outros" virar um dos motivos mais usados, cadastrar um motivo novo e específico e parar de usar o genérico. A meta é chegar a zero "Outros".</p>
+  </div>
+</div></section>
+
+<section class="block" id="sec-evolucao"><div class="wrap">
+  <p class="overline">04</p>
+  <h2>Sugestões de evolução (não é pra agora)</h2>
+  <p class="sec-lead">Quatro frentes independentes — e uma quinta que amarra todas: os funis operando integrados dentro do RD CRM.</p>
+  <div class="cards2">
+    <div class="c2">
+      <h4>1 · Melhorias no fluxo atual</h4>
+      <p><strong>Separar "Fechado" em Fechamento + Onboarding</strong> — hoje uma etapa só mistura assinar contrato com repassar pra operação, e isso esconde onde o handover está travando. <strong>Incluir uma etapa "Lead" antes do SQL</strong> — pra quando existirem leads que ainda não chegam prontos e quentes, sem misturar com quem já pediu proposta.</p>
+    </div>
+    <div class="c2">
+      <h4>2 · Revisar o funil da Precisian</h4>
+      <p>Aplicar a mesma lógica usada aqui — as mesmas perguntas (etapa faz sentido? gatilho é claro? motivo de perda é real?), a mesma régua de prazo e esfriamento — pra ver o que faz sentido mudar lá também.</p>
+    </div>
+    <div class="c2">
+      <h4>3 · Criar funil próprio de CS e CX</h4>
+      <p>Um funil de <strong>pós-venda</strong>, separado do de vendas, pro acompanhamento ativo de quem já é cliente. Etapas pela jornada do cliente ativo: onboarding concluído → em acompanhamento → revisão periódica (QBR) → risco de churn → renovação / expansão. Cobre relacionamento, cadência de reunião, atualização de cadastro, medição de satisfação (NPS/CSAT) e oportunidade de expandir a conta.</p>
+    </div>
+    <div class="c2">
+      <h4>4 · Criar funil próprio de RFM</h4>
+      <p>Um pipeline de <strong>segmentação da base por comportamento</strong> — Recência, Frequência e Valor monetário. Cada negociação/conta cai num segmento (campeões, leais, em risco, hibernando, perdidos) e cada segmento tem uma ação definida: reativar, reter, aprofundar ou reconquistar. É o que transforma a base parada em pauta de trabalho.</p>
+    </div>
+  </div>
+  <div class="c2" style="margin-top:12px;border-left:3px solid var(--nd-purple)">
+    <h4>5 · Os funis operando integrados no RD CRM</h4>
+    <p>A visão que amarra as outras quatro: <strong>todas as equipes trabalhando dentro do RD CRM</strong> — líderes, SDRs e pré-vendas — cada uma executando as etapas específicas que são dela dentro de cada funil. Nada de processo rodando em planilha paralela: <strong>RFM e propostas centralizados no próprio sistema</strong>.</p>
+    <p style="margin-top:8px">E as <strong>passagens entre funis</strong> explícitas, com gatilho claro:</p>
+    <ul style="margin:6px 0 0;padding-left:1.05rem;font-size:.85rem;color:var(--nd-g300)">
+      <li><strong>Vendas → CS e CX</strong>: quando a negociação entra em Fechado e o handover é concluído.</li>
+      <li><strong>CS e CX → RFM</strong>: cliente ativo entra na régua de segmentação por recência/frequência/valor.</li>
+      <li><strong>RFM → Vendas</strong>: segmento "campeão" ou "leal" com sinal de expansão vira nova oportunidade no funil comercial.</li>
+    </ul>
+  </div>
+</div></section>
+
+<footer><div class="wrap">MVP interno · Nação Digital · time comercial · rev. 2026-09</div></footer>
+
+</div>
+<!-- ===================== /TAB: FUNIL ===================== -->
+
+<!-- ===================== TAB: MÉTRICAS ===================== -->
+<div class="panel" id="tab-metricas">
+
+<section class="hero"><div class="wrap">
+  <span class="hero-badge" style="background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.35);color:var(--nd-success)">Como saber se o funil está funcionando</span>
+  <h1>Métricas &amp; Acompanhamento</h1>
+  <p class="prose">O funil define etapa, gatilho, prazo e automação — mas sozinho não diz se está funcionando. Esta aba fecha esse ciclo: quais números olhar, onde olhar dentro do próprio RD, e principalmente <strong>qual é o ritmo de reunião que mantém isso vivo</strong> daqui pra frente.</p>
+</div></section>
+
+<section class="block" id="sec-metricas-porque"><div class="wrap">
+  <p class="overline">01</p>
+  <h2>Por que medir</h2>
+  <p class="sec-lead">Sem número, o funil vira anedota — cada um acha que sabe onde está o gargalo, e ninguém confere. A proposta aqui não é montar um BI paralelo nem um painel de controle pesado pro time júnior: é decidir o mínimo de métrica que mostra gargalo e ineficiência de verdade, e criar o hábito de olhar pra ela.</p>
+  <div class="callout brand">
+    <span class="lbl">O que este MVP já dá de graça</span>
+    <p>As etapas, os gatilhos e os prazos "Alvo"/"Esfriando" já definidos na aba <strong>Funil ND</strong> não são só regra de processo — são a base de cálculo de quase toda métrica desta aba. Medir aqui é, na prática, comparar o que está acontecendo com o que já foi combinado lá.</p>
+  </div>
+  <div class="callout err" style="margin-top:12px">
+    <span class="lbl">A dor de hoje, nas palavras da reunião de 08/09</span>
+    <p>"A gente está tendo uma dor na hora de ver as informações": tarefa criada nos últimos 30 dias e não fechada, card mudando de etapa sem registro do que aconteceu (só "mexeu o card"), negociação sem a proposta ou o link dela dentro do sistema. Não é falta de métrica — é falta de registro pra métrica existir. Por isso esta aba não começa em indicador, começa em hábito.</p>
+  </div>
+</div></section>
+
+<section class="block" id="sec-metricas-funil"><div class="wrap">
+  <p class="overline">02</p>
+  <h2>Métricas do funil</h2>
+  <p class="sec-lead">Cinco <strong>indicadores centrais</strong> que respondem "o funil está saudável?" sem precisar abrir planilha.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Métrica</th><th>O que mede</th><th>Como calcular / onde olhar</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Conversão etapa a etapa</strong></td><td>Onde o funil realmente afunila — SQL→Discovery→Proposta→Negociação→Fechado</td><td>Negociações que avançaram ÷ negociações que entraram na etapa, no período</td></tr>
+      <tr><td><strong>Tempo médio na etapa vs. SLA</strong></td><td>Se o time está dentro do prazo "Alvo" e do limite de "Esfriando" já definidos por etapa (aba Funil ND)</td><td>Tempo entre entrada e saída da etapa, comparado ao SLA combinado</td></tr>
+      <tr><td><strong>Taxa de vitória</strong></td><td>Eficiência geral do funil</td><td>Ganhas ÷ (Ganhas + Perdidas), no período</td></tr>
+      <tr><td><strong>Motivos de perda, com % de "Outros"</strong></td><td>Se sabemos por que perdemos — a meta de zero "Outros" (seção 03 do Funil ND) vira número acompanhado</td><td>Distribuição de <code>lost_reason_id</code> no período</td></tr>
+      <tr><td><strong>Valor em pipeline e acurácia do forecast</strong></td><td>Quanto está em jogo por etapa, e se a Data de Previsão de Fechamento é confiável</td><td>Soma de <code>total_price</code> por etapa · Data prevista vs. data real de fechamento</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 style="margin-top:24px">Indicadores em observação — já medir, sem virar meta ainda</h3>
+  <p class="sec-lead">Candidatos que surgiram na conversa: ainda não está decidido se viram indicador oficial, mas faz sentido começar a medir desde já — quanto mais cedo o dado existir, mais rápido dá pra definir meta de verdade.</p>
+  <div class="cards2">
+    <div class="c2"><h4>Tempo de atendimento (1º contato)</h4><p>Velocidade real de resposta ao lead — liga direto com o SLA "até 30 min" do SQL e com a Regra dos 5 minutos (aba Automações). <strong>Já sai pronto</strong> no relatório nativo <strong>"Tempo de primeiro contato"</strong> (plano Pro+, a ND tem) — mede criação da negociação até o 1º contato registrado. É só ligar a rotina de olhar.</p></div>
+    <div class="c2"><h4>Propostas apresentadas por negócio</h4><p>Quantas idas e vindas até fechar — indica se o processo comercial está redondo ou exigindo retrabalho.</p></div>
+    <div class="c2"><h4>Nº de atividades por negociação</h4><p>Quantos toques (ligação, e-mail, reunião) uma negociação leva até fechar ou perder — sai do relatório <strong>Atividade de Vendas</strong>. Ajuda a separar "não deu certo" de "não trabalhamos".</p></div>
+    <div class="c2"><h4>No-show na Discovery</h4><p>% de reuniões de Discovery marcadas que o cliente não comparece. Sinaliza qualidade do lead e do agendamento no SQL.</p></div>
+  </div>
+  <div class="callout warn" style="margin-top:12px">
+    <span class="lbl">Pré-requisito pra "propostas por negócio"</span>
+    <p>Hoje a Proposta entra no card como link solto na <strong>Observação</strong> (aba Funil ND, etapa Proposta) — não pelo recurso nativo de <strong>Propostas</strong> que a API do RD já expõe (aba MCP e API). Pra virar número confiável, ou passa a registrar cada envio com uma anotação padronizada, ou passa a usar o recurso nativo — sem isso, o dado não existe pra contar. O mesmo vale pra "no-show": só mede se a reunião de Discovery for sempre agendada como <strong>Tarefa do tipo reunião</strong> e marcada como realizada/não realizada.</p>
+  </div>
+</div></section>
+
+<section class="block" id="sec-metricas-qualidade"><div class="wrap">
+  <p class="overline">03</p>
+  <h2>Métricas de qualidade de dado</h2>
+  <p class="sec-lead">A auditoria de campos (aba Campos Personalizados) achou os problemas uma vez; aqui eles viram número que se acompanha todo período, não achado que se esquece.</p>
+  <div class="cards2">
+    <div class="c2"><h4>% negociações sem Empresa vinculada</h4><p>O achado principal da auditoria — meta é essa fatia cair período a período.</p></div>
+    <div class="c2"><h4>% contatos sem Cargo preenchido</h4><p><code>job_title</code> existe nativo, mas não é preenchido na prática — mede se isso está mudando.</p></div>
+    <div class="c2"><h4>% negociações sem tarefa aberta</h4><p>Transforma o hábito "nenhum card sem tarefa" (automações globais, aba Funil ND) num número real, não só numa regra combinada.</p></div>
+    <div class="c2"><h4>Nº de negociações "mortas"</h4><p>Card aberto há muito tempo, sem tarefa e sem interação — não é "esfriando" recente, é lixo acumulado. Meta é essa fila zerar a cada rodada de limpeza, não só parar de crescer.</p></div>
+  </div>
+
+  <div class="callout warn" style="margin-top:14px">
+    <span class="lbl">Sanitização de negociações — achado da reunião de 08/09</span>
+    <p>Passando o pipeline a limpo apareceram: negociações paradas há 45 dias sem ninguém mexer, tarefa de reunião marcada e nunca fechada, e propostas que parecem duplicadas (mesmo cliente, dois cards) sem ficar claro se é erro de cadastro ou duas propostas de verdade diferentes. Regra combinada: <strong>antes de excluir por duplicidade, confirmar com quem criou</strong> — descartar informação de verdade é pior do que conviver com um card extra por mais uma rodada.</p>
+    <p style="margin-top:8px"><strong>Causa que também apareceu:</strong> quem está prospectando fora do CRM só cria a negociação depois que já tem interação real do cliente — o que é correto pelo gatilho de SQL (lead quente, ver aba Funil ND), mas faz o volume "aberto em SQL" mentir se alguém olhar de fora sem saber disso. Vale deixar essa regra explícita pro time e pra quem lê o relatório.</p>
+  </div>
+</div></section>
+
+<section class="block" id="sec-metricas-onde"><div class="wrap">
+  <p class="overline">04</p>
+  <h2>Onde olhar isso no RD</h2>
+  <p class="sec-lead">Quase tudo acima já existe pronto nos <strong>Relatórios nativos do RD Station CRM</strong> — não é preciso construir painel paralelo. E a ND, no plano <strong>Advanced</strong>, tem o pacote completo, incluindo os <strong>Dashboards Personalizados</strong>. MCP e API entram só quando a pergunta é específica demais pro relatório padrão (ex.: cruzar qualidade de campo com etapa do funil ND).</p>
+
+  <h3>Métrica → relatório nativo</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Métrica (seção 02 / 03)</th><th>Relatório nativo do RD CRM</th><th>Plano</th></tr></thead>
+    <tbody>
+      <tr><td>Valor em pipeline por etapa</td><td><strong>Pipeline</strong> — negociações em aberto e valor previsto por etapa (tem também o <strong>CRM Live</strong>, em tempo real)</td><td>Free / Basic</td></tr>
+      <tr><td>Conversão etapa a etapa · Taxa de vitória · Ciclo de vendas · Motivos de perda por etapa</td><td><strong>Negociações Concluídas</strong> — ciclo de vendas, fechadas por etapa/equipe/vendedor, motivos de perda, canal e campanha</td><td>Basic</td></tr>
+      <tr><td>Motivos de perda, com % de "Outros"</td><td><strong>Negociações Concluídas</strong> + modelo pronto <strong>"Motivos de Perda"</strong> nos Dashboards Personalizados</td><td>Basic / Advanced</td></tr>
+      <tr><td>Conversão, receita, nº de negociações, fechadas</td><td><strong>Performance em Vendas</strong></td><td>Pro</td></tr>
+      <tr><td><strong>Tempo de atendimento (1º contato)</strong></td><td><strong>Tempo de primeiro contato</strong> — relatório nativo: mede o tempo entre a criação da negociação e o 1º contato registrado. Não precisa calcular na mão.</td><td>Pro</td></tr>
+      <tr><td>Nº de atividades / interações por negociação e por vendedor</td><td><strong>Atividade de Vendas</strong> · <strong>Feedback</strong> (frequência de interação com o cliente)</td><td>Basic / Pro</td></tr>
+      <tr><td>% negociações sem Empresa · sem Cargo · sem tarefa aberta</td><td>Não sai pronto — é um <strong>Dashboard Personalizado</strong> com filtro por campo vazio / sem tarefa, ou uma pergunta via MCP</td><td>Advanced</td></tr>
+      <tr><td>Desempenho x meta (quando as metas existirem)</td><td><strong>Metas</strong> — cadastra meta individual, de equipe ou de empresa e acompanha o realizado vs. alvo</td><td>Basic</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout ok" style="margin-top:14px">
+    <span class="lbl">Dashboards Personalizados — exclusivo do Advanced (a ND tem)</span>
+    <p>Monta análise arrastando e soltando indicadores, com filtro por etapa, responsável, qualificação, campanha e origem. Vêm <strong>4 modelos prontos</strong>: Performance de Negociações Criadas · Análise de Vendas e Perdas · Motivos de Perda · Performance por Responsável. É aqui que os 5 indicadores centrais viram um painel só, sem planilha.</p>
+  </div>
+  <div class="callout">
+    <span class="lbl">Fontes</span>
+    <p><a href="https://www.rdstation.com/produtos/crm/vendas/relatorios-de-vendas/" target="_blank" rel="noopener noreferrer">↗ Relatórios de Vendas — RD Station CRM</a> · <a href="https://www.rdstation.com/blog/materiais-educativos/ebooks/ebook-os-principais-relatorios-do-rd-station-crm/" target="_blank" rel="noopener noreferrer">↗ eBook: os principais relatórios do RD Station CRM</a></p>
+  </div>
+</div></section>
+
+<section class="block" id="sec-metricas-cadencia"><div class="wrap">
+  <p class="overline">05</p>
+  <h2>Cadência de acompanhamento</h2>
+  <p class="sec-lead">O funil não se mantém sozinho depois de publicado — o acompanhamento daqui pra frente acontece em dois ritmos de reunião, com papéis diferentes.</p>
+
+  <div class="cards2">
+    <div class="c2"><h4>Reunião de forecast · semanal (segunda-feira)</h4><p>Proposta de Rodrigo e Eduarda na reunião de 08/09, confirmada por Nathan: cada dono de conta traz o update da semana anterior e revisa a <strong>Data de Previsão de Fechamento</strong> de suas negociações abertas — se ainda vale, se atrasou, se precisa mudar. Cobre também o que está esfriando, vencendo ou sem tarefa aberta. Decisão rápida, card por card — não é análise de tendência. Fonte: relatórios <strong>Pipeline</strong> / <strong>CRM Live</strong>.</p></div>
+    <div class="c2"><h4>Reunião de processo · mensal</h4><p>Olha os números do mês (seções 02 e 03) e investiga a causa: por que a conversão SQL→Discovery caiu, por que "Outros" subiu. A partir disso, ajusta etapa, prazo, campo ou automação.</p></div>
+  </div>
+  <p class="sec-lead" style="margin-top:10px;font-size:.82rem">Nathan foi explícito em não fechar isso como regra 100% definida na reunião de 08/09 — o formato exato da reunião de forecast fica pra próxima agenda, com Rodrigo e Eduarda.</p>
+
+  <h3 style="margin-top:22px">Modelo da reunião de processo (mensal)</h3>
+  <p class="sec-lead">Pauta fixa pra não virar reunião de achismo. ~45 min, mensal (ou quinzenal no começo).</p>
+  <div class="scroll"><table>
+    <thead><tr><th>#</th><th>Bloco</th><th>O que entra</th><th>Pergunta que a reunião responde</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><strong>Placar do mês</strong></td><td>Os 5 indicadores centrais (seção 02) do mês fechado, lado a lado com o mês anterior</td><td>O funil melhorou, piorou ou ficou igual?</td></tr>
+      <tr><td>2</td><td><strong>Gargalo</strong></td><td>A menor taxa de conversão etapa→etapa e o maior tempo médio vs. SLA</td><td>Onde o funil está travando agora — e por quê?</td></tr>
+      <tr><td>3</td><td><strong>Perdas</strong></td><td>Distribuição de motivos de perda + % de "Outros" + leitura das observações de perda do mês</td><td>Estamos perdendo pelo mesmo motivo? Falta cadastrar motivo novo?</td></tr>
+      <tr><td>4</td><td><strong>Qualidade de dado</strong></td><td>Os 3 percentuais da seção 03 (sem Empresa / sem Cargo / sem tarefa)</td><td>A base está ficando mais limpa ou mais suja?</td></tr>
+      <tr><td>5</td><td><strong>Ajustes</strong></td><td>Decisões: mexer em etapa, prazo, campo obrigatório, automação ou na própria lista de métricas</td><td>O que muda no processo até a próxima reunião — e quem é o dono?</td></tr>
+      <tr><td>6</td><td><strong>Registro</strong></td><td>Ata curta: número que chamou atenção · decisão · dono · prazo</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout brand" style="margin-top:12px">
+    <span class="lbl">Metas entram no próprio RD</span>
+    <p>Quando as metas forem definidas (seção abaixo), elas não viram planilha: cadastra no <strong>relatório de Metas</strong> do RD CRM — meta individual, de equipe ou de empresa — e o realizado vs. alvo passa a ser acompanhado nativamente, sem cálculo manual. O bloco 1 da reunião passa a incluir "realizado vs. meta".</p>
+  </div>
+
+  <div class="callout ok" style="margin-top:16px">
+    <span class="lbl">Por que mensal</span>
+    <p>Indicador de conversão, taxa de vitória e motivo de perda só conta história com volume — olhar toda semana mistura ruído com tendência. A reunião semanal já cobre a urgência (esfriando, vencendo); a mensal é o espaço certo pra número virar decisão de processo. Quinzenal é uma opção pro início, se o time preferir iterar mais rápido enquanto o hábito pega.</p>
+  </div>
+
+  <div class="callout ok" style="margin-top:16px">
+    <span class="lbl">O ponto principal</span>
+    <p>É na reunião de processo que a <strong>própria lista de métricas destas seções é revisada e evolui</strong> — não é uma lista fixa gravada em pedra, é pauta recorrente. Cada reunião registra: o que foi discutido, qual ajuste foi decidido, quem é o dono e até quando.</p>
+  </div>
+
+  <h3 style="margin-top:22px">Como as metas vão nascer</h3>
+  <p class="sec-lead">Este é um MVP sem histórico — inventar meta-alvo agora seria chute. A régua é <strong>medir primeiro, definir depois</strong>, num caminho de 3 passos.</p>
+  <div class="fmap" style="margin-top:8px">
+    <div class="maprow"><span class="mapfrom"><strong>1. Linha de base</strong> — 1 a 2 ciclos medindo sem cobrar meta (primeiros 30–60 dias, ou o 1º mês fechado)</span><span class="mapar">→</span><span class="mapto">cada indicador ganha um valor real de partida</span></div>
+    <div class="maprow"><span class="mapfrom"><strong>2. Meta realista</strong> — na reunião de processo, definir o alvo a partir da linha de base (ex.: "conversão SQL→Discovery de 40% → meta 50% em 90 dias")</span><span class="mapar">→</span><span class="mapto">cadastrar no relatório de <strong>Metas</strong> do RD (individual / equipe / empresa)</span></div>
+    <div class="maprow"><span class="mapfrom"><strong>3. Acompanhar e recalibrar</strong> — realizado vs. meta entra no bloco 1 da reunião mensal</span><span class="mapar">→</span><span class="mapto">meta batida vira o novo piso; meta longe demais é revista</span></div>
+  </div>
+  <div class="callout" style="margin-top:12px">
+    <span class="lbl">Ordem sugerida pra transformar em meta</span>
+    <p>Começar pelos que o time controla diretamente e que já têm relatório pronto: <strong>tempo de 1º contato</strong>, <strong>% de negociação sem tarefa aberta</strong> e <strong>% de "Outros" nos motivos de perda</strong>. Conversão e taxa de vitória vêm depois — dependem de volume pra meta fazer sentido.</p>
+  </div>
+</div></section>
+
+<section class="block" style="border-bottom:none" id="sec-metricas-pendencias"><div class="wrap">
+  <p class="overline">06</p>
+  <h2>Decisões e pendências — reunião de 08/09</h2>
+  <p class="sec-lead">Nathan apresentou o funil pra Rodrigo e Eduarda (Carlos entrou por um trecho). Registro do que ficou decidido e do que ficou em aberto, pra não se perder até a próxima agenda.</p>
+
+  <h3>Decidido / validado</h3>
+  <ul style="margin:8px 0 0;padding-left:1.05rem;font-size:.88rem;color:var(--nd-g200)">
+    <li>Estrutura do funil ND (5 etapas, objetivo, gatilho, prazo, motivos de perda) — apresentada e <strong>sem objeção</strong> de Rodrigo ou Eduarda.</li>
+    <li>Nathan configura o máximo de automação possível no RD assim que tiver o aceite — não vai criar toda tarefa manualmente, mas as principais de cada etapa nascem automáticas ao entrar na etapa.</li>
+    <li>As duas automações "Alerta Comercial" (ND e Precisian) que criam negociação a partir do Marketing foram confirmadas pelo próprio Nathan como o que já existe hoje — bate com o que está descrito na aba <strong>Automações</strong>.</li>
+    <li>E-mail de boas-vindas no Fechamento: o próprio Nathan considera de baixo valor ("não faz tanto sentido") — fica como proposição, não prioridade.</li>
+  </ul>
+
+  <h3 style="margin-top:20px">Pendências abertas</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Pendência</th><th>Dono</th><th>Prazo citado</th></tr></thead>
+    <tbody>
+      <tr><td>Decidir quais dos 27 campos personalizados ficam no funil ND, quais no Precisian, e quais somem</td><td>Rodrigo + Eduarda</td><td>Terça-feira seguinte à reunião</td></tr>
+      <tr><td>Mapear de onde vem cada campo de integração Marketing → CRM (com o Sorato) e liberar acesso pro time preencher</td><td>Nathan</td><td>Sem data — "vou sentar com o Sorato"</td></tr>
+      <tr><td>Confirmar se cards aparentemente duplicados (mesma conta, duas propostas) são erro de cadastro ou negociações de fato distintas, antes de excluir</td><td>Eduarda / Rodrigo</td><td>Sem data</td></tr>
+      <tr><td>Rotina de <strong>fechar</strong> tarefa, não só criar — "criar tarefa é OK, mas tem que fechar as tarefas"</td><td>Time comercial</td><td>Contínuo</td></tr>
+      <tr><td>Formato final da reunião de forecast semanal (quem participa, o que exatamente se reporta)</td><td>Nathan + Rodrigo + Eduarda</td><td>Próxima agenda</td></tr>
+      <tr><td>Ativar a Rê no WhatsApp (Eduarda ainda não tinha ativado; extensão de WhatsApp e IA de negociação já estavam configuradas)</td><td>Eduarda</td><td>Sem data — pedido direto do Nathan</td></tr>
+      <tr><td>Definir se a Nayara assume o WhatsApp do Precisian durante a transição de atendimento</td><td>Rodrigo</td><td>Em aberto, "ainda não conversamos certinho"</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout" style="margin-top:14px">
+    <span class="lbl">Fora do escopo deste documento</span>
+    <p>A reunião também revisou a <strong>ferramenta de diagnóstico/Discovery</strong> (formulário de dor por blocos, usado em pré-venda) — é outro material, vive em <code>07 Diagnóstico e Pré-venda</code>, não faz parte do funil de vendas no RD CRM. Registrado aqui só pra não sumir da memória de quem participou da reunião.</p>
+  </div>
+</div></section>
+
+<footer><div class="wrap">Métricas &amp; Acompanhamento · Nação Digital · time comercial · rev. 2026-09</div></footer>
+
+</div>
+<!-- ===================== /TAB: MÉTRICAS ===================== -->
+
+<!-- ===================== TAB: CAMPOS ===================== -->
+<div class="panel" id="tab-campos">
+
+<section class="hero"><div class="wrap">
+  <span class="hero-badge" style="background:rgba(96,165,250,.1);border-color:rgba(96,165,250,.35);color:var(--nd-info)">Auditoria · direto da API do RD CRM</span>
+  <h1>Campos Personalizados — o que já existe</h1>
+  <p class="prose">Levantamento real, puxado direto da API do RD Station CRM da Nação Digital. Organizado por entidade (Negociação, Empresa, Contato), com o que é nativo, o que é customizado, e pra qual funil cada coisa parece servir — mais a <strong>integração com o RD Marketing</strong>: quais campos descem de lá quando a negociação é criada. (As automações que disparam isso ficam na aba <strong>Automações</strong>.)</p>
+</div></section>
+
+<section class="block" id="sec-nativo">
+  <div class="wrap">
+    <p class="overline">00</p>
+    <h2>Antes de tudo: nativo x personalizado, e um alerta</h2>
+    <div class="cards2">
+      <div class="c2"><h4>Campo nativo</h4><p>Já vem pronto no RD Station, faz parte da estrutura da ferramenta — não aparece na tela de "Campos Personalizados", mas existe e pode ser usado (ex.: Origem, Cargo, Data de previsão de fechamento).</p></div>
+      <div class="c2"><h4>Campo personalizado</h4><p>Foi criado à mão por alguém da equipe, aparece em Configurações → Campos Personalizados. É aqui que mora a bagunça, porque qualquer pessoa pode criar um novo sem revisar se já existe algo parecido.</p></div>
+      <div class="c2"><h4>Empresa = Organização</h4><p>É a mesma coisa com dois nomes: a tela do RD CRM mostra "Empresa", a API chama de <code>Organization</code>. Não são entidades diferentes.</p></div>
+    </div>
+    <div class="callout warn" style="margin-top:14px">
+      <span class="lbl">O CRM está poluído de campo</span>
+      <p>27 campos personalizados só na Negociação é muito — pra qualquer pessoa que abre um card, é difícil saber quais preencher. A causa aparente: campos criados pra um cliente ou projeto específico (Precisian, provavelmente) ficaram visíveis pra todo mundo, em vez de restritos ao funil certo. A seção de Negociações detalha, e "O que falta de verdade" propõe o que cortar/reorganizar.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="sec-integracao">
+  <div class="wrap">
+    <p class="overline">01</p>
+    <h2>Integração RD Marketing → RD CRM: de onde vem parte do dado</h2>
+    <p class="sec-lead">O RD CRM está conectado ao RD Station Marketing. Essa conexão define quais campos do lead "descem" do Marketing pro CRM quando uma negociação é criada — <strong>mas só descem se uma automação do Marketing criar essa negociação</strong> (ver a aba <a href="#" onclick="switchTab('automacoes',document.querySelector('[data-tab=automacoes]'));return false">Automações</a>). Sozinha, a conexão não move nada.</p>
+    <p class="sec-lead" style="margin-top:-4px;font-size:.82rem">Lê-se: <span style="color:var(--nd-info)">campo no RD Marketing</span> <strong style="color:var(--nd-purple-light)">→</strong> <span style="color:#fff">vira este campo no RD CRM</span>.</p>
+
+    <h3>Campos da Negociação (5)</h3>
+    <div class="fmap">
+      <div class="fmap-head"><span>RD Marketing</span><span></span><span>RD CRM</span></div>
+      <div class="maprow"><span class="mapfrom">Nome da Empresa</span><span class="mapar">→</span><span class="mapto">Nome da Negociação</span><span class="mapnote">puxa pelas informações da Empresa do Lead</span></div>
+      <div class="maprow"><span class="mapfrom">Conversões</span><span class="mapar">→</span><span class="mapto">Interações</span><span class="mapnote">campo padrão</span></div>
+      <div class="maprow"><span class="mapfrom"><span class="gl">Lead Scoring<span class="pop"><b>Lead Scoring</b> — pontuação que o RD Marketing dá ao lead conforme perfil e engajamento; quanto maior, mais "pronto pra vendas".</span></span></span><span class="mapar">→</span><span class="mapto">Qualificação</span><span class="mapnote">campo padrão</span></div>
+      <div class="maprow"><span class="mapfrom">Origem</span><span class="mapar">→</span><span class="mapto">Fonte</span><span class="mapnote">é o <code>source_id</code> nativo (seção "Achados principais")</span></div>
+      <div class="maprow"><span class="mapfrom">Nome do fluxo de Automação do Marketing</span><span class="mapar">→</span><span class="mapto">Campanha</span><span class="mapnote">é o <code>campaign_id</code> nativo</span></div>
+    </div>
+
+    <h3 style="margin-top:22px">Campos do Contato (7)</h3>
+    <div class="fmap">
+      <div class="fmap-head"><span>RD Marketing</span><span></span><span>RD CRM</span></div>
+      <div class="maprow"><span class="mapfrom">Nome</span><span class="mapar">→</span><span class="mapto">Nome do Contato</span></div>
+      <div class="maprow"><span class="mapfrom">Cargo</span><span class="mapar">→</span><span class="mapto">Cargo <code>job_title</code></span><span class="mapnote">é daqui que o Cargo <em>deveria</em> vir preenchido no CRM</span></div>
+      <div class="maprow"><span class="mapfrom">Facebook</span><span class="mapar">→</span><span class="mapto">Facebook</span></div>
+      <div class="maprow"><span class="mapfrom">Linkedin</span><span class="mapar">→</span><span class="mapto">Linkedin</span></div>
+      <div class="maprow"><span class="mapfrom">Base Legal</span><span class="mapar">→</span><span class="mapto">Base Legal</span><span class="mapnote">consentimento LGPD</span></div>
+      <div class="maprow"><span class="mapfrom">E-mail</span><span class="mapar">→</span><span class="mapto">E-mail</span></div>
+      <div class="maprow"><span class="mapfrom">Whatsapp</span><span class="mapar">→</span><span class="mapto">Whatsapp</span><span class="mapnote">único campo de texto aberto / editável da conexão — o resto é padrão e travado</span></div>
+    </div>
+
+    <h3 style="margin-top:22px">Campos da Empresa (3)</h3>
+    <div class="fmap">
+      <div class="fmap-head"><span>RD Marketing</span><span></span><span>RD CRM</span></div>
+      <div class="maprow warn"><span class="mapfrom">Nome da Empresa</span><span class="mapar">→</span><span class="mapto">Nome da Empresa</span><span class="mapnote"><strong>a Empresa não é criada no CRM se esse dado não vier do lead</strong></span></div>
+      <div class="maprow"><span class="mapfrom">Biografia</span><span class="mapar">→</span><span class="mapto">Resumo</span></div>
+      <div class="maprow"><span class="mapfrom">Site</span><span class="mapar">→</span><span class="mapto">URL</span></div>
+    </div>
+
+    <div class="callout err" style="margin-top:16px">
+      <span class="lbl">Isto explica dois problemas que a auditoria achou</span>
+      <p><strong>Cargo vazio:</strong> o <code>job_title</code> já é mapeado do Marketing — se está vazio no CRM, é porque o lead entrou sem cargo no Marketing, ou entrou direto no CRM sem passar pela automação. Não é campo faltando.</p>
+      <p><strong>Negociação sem empresa:</strong> a Empresa só nasce no CRM se o lead tiver "Nome da Empresa" preenchido no Marketing. Lead sem empresa no formulário = negociação criada solta, sem <code>organization_id</code>. É a origem mais provável do volume de negociações sem empresa vinculada.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="sec-achados">
+  <div class="wrap">
+    <p class="overline">02</p>
+    <h2>Achado principal: muita coisa já existe nativa</h2>
+    <p class="sec-lead">Antes de criar qualquer campo novo, veja o que já está lá — só não é usado.</p>
+    <div class="callout ok">
+      <span class="lbl">Não precisa criar — já existe nativo</span>
+      <p><code>source_id</code> = Origem · <code>segment_ids</code> (na Empresa) = Segmento · <code>job_title</code> (no Contato) = Cargo · <code>expected_close_date</code> = Previsão/vencimento de fechamento da proposta · <code>lost_reason_id</code> = Motivo de perda · <code>recurrence_price</code> / <code>one_time_price</code> / <code>total_price</code> = Valor da negociação · <code>organization_id</code> = vínculo com a Empresa</p>
+    </div>
+    <div class="callout err">
+      <span class="lbl">O problema não é falta de campo — é falta de preenchimento</span>
+      <p><code>job_title</code> existe no Contato, mas a amostra não trouxe nenhum contato com o campo preenchido. Isso é processo, não é ferramenta faltando.</p>
+    </div>
+
+    <h3 style="margin-top:24px">Motivos de perda cadastrados (<code>lost_reason_id</code>)</h3>
+    <p class="sec-lead">O campo é nativo — os 9 valores abaixo são a configuração cadastrada hoje na plataforma, a mesma lista usada na seção 03 do funil.</p>
+    <div class="scroll"><table>
+      <thead><tr><th>Motivo</th><th>Em quais etapas costuma aparecer</th></tr></thead>
+      <tbody>
+        <tr><td>Achou o valor alto</td><td>Proposta · Negociação</td></tr>
+        <tr><td>Cliente não retornou</td><td>Qualquer etapa</td></tr>
+        <tr><td>Concorre com cliente da casa</td><td>SQL</td></tr>
+        <tr><td>Fechou com outra empresa</td><td>Proposta · Negociação</td></tr>
+        <tr><td>Não está no timing</td><td>Discovery · Proposta</td></tr>
+        <tr><td>Não tem Perfil</td><td>SQL</td></tr>
+        <tr><td>Outros</td><td>Qualquer etapa — sempre com Observação explicando o porquê</td></tr>
+        <tr><td>Sumiu do Mapa</td><td>SQL · Discovery</td></tr>
+        <tr><td>Vai internalizar</td><td>Proposta · Negociação</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section class="block" id="sec-negociacao">
+  <div class="wrap">
+    <p class="overline">03</p>
+    <h2>Negociação (Deal) — 27 campos personalizados</h2>
+    <p class="sec-lead">A maioria tem <code>display_rules</code> amarrado a um pipeline específico — sinal de que boa parte destes campos foi criada pra um funil só (aparentemente Precisian, pelos temas de dados/infra), não pra todos.</p>
+    <input class="tfilter" type="text" placeholder="Filtrar campos — nome, tipo ou funil (ND, Precisian, Geral)" oninput="filterTable(this,'tbl-neg')">
+    <p class="tfhint">Digite pra esconder as linhas que não batem. Ex.: <code>Precisian</code>, <code>data</code>, <code>seleção</code>.</p>
+    <div class="scroll"><table id="tbl-neg">
+      <thead><tr><th>Campo</th><th>Tipo</th><th>Pra qual funil</th></tr></thead>
+      <tbody>
+        <tr><td>Implementação valor de referência</td><td>texto</td><td><span class="tagfield geral">Geral</span></td></tr>
+        <tr><td>Parcela mensal</td><td>texto</td><td><span class="tagfield geral">Geral</span></td></tr>
+        <tr><td>Número de parcelas</td><td>texto</td><td><span class="tagfield geral">Geral</span></td></tr>
+        <tr><td>Vigência em meses</td><td>texto</td><td><span class="tagfield geral">Geral</span></td></tr>
+        <tr><td>Data de início</td><td>data</td><td><span class="tagfield geral">Geral</span></td></tr>
+        <tr><td>Índice de reajuste</td><td>seleção única (IPCA, IGP-M)</td><td><span class="tagfield geral">Geral</span></td></tr>
+        <tr><td>Valor da hora excedente</td><td>texto</td><td><span class="tagfield geral">Geral</span></td></tr>
+        <tr><td>Aprovação de preço Sorato</td><td>data</td><td><span class="tagfield geral">A confirmar</span></td></tr>
+        <tr><td>Domínios cobertos</td><td>texto</td><td><span class="tagfield nd">ND</span></td></tr>
+        <tr><td>Plataforma de e-commerce</td><td>texto</td><td><span class="tagfield nd">ND</span></td></tr>
+        <tr><td>Aplicativos mobile</td><td>seleção única (incluídos, não incluídos)</td><td><span class="tagfield nd">ND</span></td></tr>
+        <tr><td>Exclusões adicionais</td><td>texto</td><td><span class="tagfield geral">Geral</span></td></tr>
+        <tr><td>Operação comercial</td><td>texto</td><td><span class="tagfield geral">Geral</span></td></tr>
+        <tr><td>Prazo de implementação</td><td>texto</td><td><span class="tagfield geral">Geral</span></td></tr>
+        <tr><td>Contagem do prazo</td><td>seleção única (dias úteis, dias corridos)</td><td><span class="tagfield geral">Geral</span></td></tr>
+        <tr><td>SLA de atendimento</td><td>texto</td><td><span class="tagfield geral">Geral</span></td></tr>
+        <tr><td>Horas de sustentação por mês</td><td>texto</td><td><span class="tagfield nd">ND</span></td></tr>
+        <tr><td>Cadência de reunião</td><td>seleção única (semanal, quinzenal, mensal)</td><td><span class="tagfield geral">Geral / CS</span></td></tr>
+        <tr><td>Canal oficial de solicitações</td><td>texto</td><td><span class="tagfield geral">Geral / CS</span></td></tr>
+        <tr><td>Hospedagem do Lake</td><td>seleção única (Precisian, Cliente, Não aplicável)</td><td><span class="tagfield pr">Precisian</span></td></tr>
+        <tr><td>Infraestrutura isolada</td><td>seleção única (sim, não)</td><td><span class="tagfield pr">Precisian</span></td></tr>
+        <tr><td>Retenção de dados</td><td>texto</td><td><span class="tagfield pr">Precisian</span></td></tr>
+        <tr><td>Limite de volume incluído</td><td>texto</td><td><span class="tagfield pr">Precisian</span></td></tr>
+        <tr><td>Acesso programático</td><td>múltipla escolha (API, MCP, conexão direta)</td><td><span class="tagfield pr">Precisian</span></td></tr>
+        <tr><td>SLA de disponibilidade</td><td>texto</td><td><span class="tagfield pr">Precisian</span></td></tr>
+        <tr><td>Modalidade de saída</td><td>seleção única (exportação, transferência, a definir)</td><td><span class="tagfield pr">Precisian</span></td></tr>
+        <tr><td>Modelo de cobrança</td><td>seleção única (setup_separado, amortizado, recorrente_puro)</td><td><span class="tagfield geral">Geral</span></td></tr>
+      </tbody>
+    </table></div>
+    <p class="sec-lead" style="margin-top:10px">Campos nativos do Deal: <code>id, name, recurrence_price, one_time_price, total_price, rating, status, closed_at, expected_close_date, pipeline_id, stage_id, owner_id, source_id, campaign_id, lost_reason_id, organization_id, contact_ids, product_ids, custom_fields, created_at, updated_at</code></p>
+
+    <h3 style="margin-top:24px">Visão por funil — os mesmos 27, agrupados</h3>
+    <p class="sec-lead">A mesma tabela acima, só que somada por destino. Isso dá o norte de quanto cada funil "pesa" hoje no CRM.</p>
+    <div class="cards2">
+      <div class="c2"><h4><span class="tagfield nd">ND</span> — 4 campos</h4><p>Domínios cobertos · Plataforma de e-commerce · Aplicativos mobile · Horas de sustentação por mês</p></div>
+      <div class="c2"><h4><span class="tagfield pr">Precisian</span> — 7 campos</h4><p>Hospedagem do Lake · Infraestrutura isolada · Retenção de dados · Limite de volume incluído · Acesso programático · SLA de disponibilidade · Modalidade de saída</p></div>
+      <div class="c2"><h4><span class="tagfield geral">Geral</span> — 15 campos</h4><p>Financeiro/contratual, usado (ou usável) pelos dois funis: parcelas, vigência, reajuste, prazo, SLA de atendimento, modelo de cobrança, etc.</p></div>
+      <div class="c2"><h4>A confirmar — 1 campo</h4><p>"Aprovação de preço Sorato" — nome não deixa claro o destino; confirmar com quem criou.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="sec-empresa">
+  <div class="wrap">
+    <p class="overline">04</p>
+    <h2>Empresa (Organization) — 3 campos personalizados</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Campo</th><th>Tipo</th><th>Observação</th></tr></thead>
+      <tbody>
+        <tr><td>Cidade</td><td>texto</td><td>—</td></tr>
+        <tr><td>Estado</td><td>seleção única</td><td><span class="tagfield bug">sem opções cadastradas — campo quebrado, corrigir</span></td></tr>
+        <tr><td>Produtos</td><td>texto</td><td>—</td></tr>
+      </tbody>
+    </table></div>
+    <p class="sec-lead" style="margin-top:10px">Campos nativos: <code>id, name, description, url, address (line, latitude, longitude), segment_ids, follower_ids, owner_id, custom_fields, created_at, updated_at</code> — <code>segment_ids</code> já cobre "Segmento", não precisa de campo novo.</p>
+  </div>
+</section>
+
+<section class="block" id="sec-contato">
+  <div class="wrap">
+    <p class="overline">05</p>
+    <h2>Contato (Contact) — 2 campos personalizados</h2>
+    <div class="scroll"><table>
+      <thead><tr><th>Campo</th><th>Tipo</th><th>Observação</th></tr></thead>
+      <tbody>
+        <tr><td>Whatsapp</td><td>número (único)</td><td>—</td></tr>
+        <tr><td>Contato</td><td>texto</td><td>—</td></tr>
+      </tbody>
+    </table></div>
+    <p class="sec-lead" style="margin-top:10px">Campos nativos: <code>id, name, emails, phones, social_profiles, legal_bases, job_title, organization_id, custom_fields, created_at, updated_at, context_origin</code> — <code>job_title</code> (Cargo) já existe, mas não está sendo preenchido na prática.</p>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <p class="overline">06</p>
+    <h2>O que falta de verdade pro funil ND</h2>
+    <p class="sec-lead">Descontando o que já existe nativo, isto é o que realmente precisa ser criado como campo novo na Negociação, específico pro funil ND:</p>
+    <div class="cards2">
+      <div class="c2"><h4>Dor principal</h4><p>Texto longo — preenchido no Discovery</p></div>
+      <div class="c2"><h4>Orçamento estimado</h4><p>Número/moeda — preenchido no Discovery</p></div>
+      <div class="c2"><h4>Decisor identificado</h4><p>Sim/não — preenchido no Discovery</p></div>
+      <div class="c2"><h4>Data da Discovery</h4><p>Data — preenchido no SQL</p></div>
+      <div class="c2"><h4>Validade da proposta</h4><p>Data — preenchido na Proposta</p></div>
+      <div class="c2"><h4>Forma de pagamento</h4><p>Lista — preenchido na Negociação</p></div>
+    </div>
+
+    <h3 style="margin-top:22px">Motivo de Cancelamento — não existe hoje</h3>
+    <p class="sec-lead">Levantado na reunião de 08/09: hoje existe <strong>Motivo de Perda</strong> (por que uma negociação não fechou) mas <strong>não existe Motivo de Cancelamento</strong> — por que um cliente já ativo encerrou o contrato. São coisas diferentes e nenhum campo cobre a segunda hoje.</p>
+    <div class="cards2">
+      <div class="c2" style="border-left:3px solid var(--nd-purple)"><h4>Motivo de Cancelamento <span class="tagfield bug" style="margin-left:6px">a criar</span></h4><p>Seleção única, lista fechada (sem "Outros" — mesma régua do Motivo de Perda). Candidatos: inadimplência, insatisfação com resultado, corte de orçamento do cliente, encerramento da operação do cliente, decisão de internalizar, fim de contrato/projeto sem renovação.</p></div>
+      <div class="c2"><h4>Onde vive</h4><p>Ainda não tem um funil de pós-venda pra hospedar esse campo (ver "Sugestões de evolução" → Funil de CS e CX, aba Funil ND). Enquanto esse funil não existe, pode nascer como campo na <strong>Empresa</strong> — assim já registra o motivo de cancelamento independente de o card de venda ainda existir ou não.</p></div>
+    </div>
+
+    <div class="callout" style="margin-top:16px">
+      <span class="lbl">Já mudou desde a auditoria original</span>
+      <p>Nathan já removeu <strong>4 campos duplicados de contato</strong> (ex.: um segundo campo de telefone) que atrapalhavam o preenchimento automático vindo do Marketing — o número de 27 campos na Negociação tende a cair mais depois que Rodrigo e Eduarda decidirem o próximo item.</p>
+    </div>
+    <div class="callout warn" style="margin-top:12px">
+      <span class="lbl">Pendência — reunião 08/09</span>
+      <p>Rodrigo e Eduarda vão se reunir pra decidir, campo a campo, o que fica pro funil <strong>ND</strong> e o que fica pro <strong>Precisian</strong> (ex.: valor de hora excedente, aprovação de preço Sorato, domínios cobertos) — retorno esperado até terça-feira seguinte à reunião. Até lá, a classificação ND/Precisian/Geral desta aba é a melhor leitura disponível, não a palavra final.</p>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <p class="overline">07</p>
+    <h2>Risco de qualidade de dado — atenção</h2>
+    <div class="callout err">
+      <span class="lbl">Muitas negociações sem empresa vinculada</span>
+      <p>O levantamento mostra um volume alto de negociações (<code>organization_id</code>) sem organização associada. Isso quebra relatório por segmento, por cidade, por porte — qualquer coisa que dependa da Empresa. Cuidado especial ao criar oportunidade via automação: sempre vincular a organização, nunca deixar em branco "pra depois".</p>
+      <p style="margin-top:8px">Existe uma correção nativa mais direta que revisar automação por automação: <a href="https://ajuda.rdstation.com/s/article/Tornar-o-campo-Empresa-obrigat%C3%B3rio-nas-Oportunidades-do-RD-Station-CRM?language=pt_BR" target="_blank" rel="noopener noreferrer">tornar o campo Empresa obrigatório nas negociações ↗</a> — trava a criação/avanço do card sem organização vinculada, na fonte.</p>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap">Auditoria de campos · Nação Digital · fonte: API do RD Station CRM · levantamento 2026-09</div></footer>
+
+</div>
+<!-- ===================== /TAB: CAMPOS ===================== -->
+
+<!-- ===================== TAB: AUTOMAÇÕES ===================== -->
+<div class="panel" id="tab-automacoes">
+
+<section class="hero"><div class="wrap">
+  <span class="hero-badge" style="background:rgba(96,165,250,.1);border-color:rgba(96,165,250,.35);color:var(--nd-info)">RD Marketing → RD CRM</span>
+  <h1>Automações — do Marketing pro CRM</h1>
+  <p class="prose">Como um lead qualificado no RD Station Marketing vira uma negociação dentro do RD CRM. São os fluxos de automação do <strong>Marketing</strong> que fazem essa ponte — sem eles, a integração de campos (aba anterior) não dispara nada.</p>
+</div></section>
+
+<section class="block" id="sec-autocomo"><div class="wrap">
+  <p class="overline">01</p>
+  <h2>Como o lead vira negociação</h2>
+  <p class="sec-lead">A conexão entre os dois sistemas já existe, mas ela é passiva: fica esperando alguém mandar. Quem manda é uma automação do Marketing.</p>
+  <div class="fmap" style="margin-top:16px">
+    <div class="maprow"><span class="mapfrom">Lead converte num formulário / evento do Marketing</span><span class="mapar">→</span><span class="mapto">entra na automação certa (pelo gatilho de conversão)</span></div>
+    <div class="maprow"><span class="mapfrom">A automação marca "Oportunidade" e cria a negociação</span><span class="mapar">→</span><span class="mapto">negociação nasce no CRM, no funil e etapa definidos no passo</span></div>
+    <div class="maprow"><span class="mapfrom">A conexão de campos copia o que o lead já tinha</span><span class="mapar">→</span><span class="mapto">Nome, Cargo, Whatsapp, Origem, Empresa… <span class="mapnote" style="border:none;padding:0;margin:0">só o que veio preenchido do Marketing</span></span></div>
+  </div>
+  <div class="callout warn" style="margin-top:14px">
+    <span class="lbl">Ponto de atenção</span>
+    <p>Lead que chega qualificado por um canal <strong>sem automação configurada</strong> (telefone, indicação, um formulário fora das listas de gatilho) não entra no CRM por aqui — ou alguém cria a negociação na mão, ou ela se perde. Mapear todos os canais de entrada é parte do trabalho.</p>
+  </div>
+</div></section>
+
+<section class="block" id="sec-autofluxos"><div class="wrap">
+  <p class="overline">02</p>
+  <h2>Os fluxos que existem hoje</h2>
+  <p class="sec-lead">Dois fluxos "Alerta Comercial" no RD Marketing criam negociação no CRM. Um pro funil Nação Digital, um pro da Precisian.</p>
+  <div class="cards2">
+    <div class="c2">
+      <h4>[ND] Alerta Comercial — Nação Digital</h4>
+      <p style="margin-bottom:6px"><strong>Dispara quando</strong> o lead converte em: <code>/contrate-agora</code> · <code>contrate-agora</code> · <code>/fale-conosco/</code> · <code>whatsapp-button</code></p>
+      <p style="margin:0"><strong>O que faz, em ordem:</strong></p>
+      <ol style="margin:4px 0 0;padding-left:1.05rem;font-size:.85rem;color:var(--nd-g300)">
+        <li>Notifica por e-mail: rodrigo, eduarda.nardin e nayara</li>
+        <li>Adiciona tags: <code>rd crm</code>, <code>Nação Digital</code></li>
+        <li><strong>Cria a negociação no CRM</strong> — Funil Nação Digital, etapa SQL, dono eduarda.nardin</li>
+        <li>Adiciona anotação com Site e Segmento da empresa</li>
+        <li>Marca como <span class="gl">Oportunidade<span class="pop"><b>Oportunidade</b> — no RD Marketing, marcar o lead como pronto pra abordagem comercial; é o gancho que dispara a passagem pro CRM.</span></span></li>
+        <li>Muda o estágio do lead pra "Lead Qualificado"</li>
+        <li>Ramifica por origem da conversão (Fale Conosco / Contrate Agora / …) e adiciona a tag específica de cada caminho</li>
+      </ol>
+    </div>
+    <div class="c2">
+      <h4>[ND] Alerta Comercial — Precisian</h4>
+      <p style="margin-bottom:6px"><strong>Dispara quando</strong> o lead converte em: <code>lp-alertas</code> · <code>lp-dados-nao-batem</code> · <code>lp-merchant-center</code> · <code>precisian-guia-mmm</code> · <code>formulario-site-institucional</code></p>
+      <p style="margin:0"><strong>O que faz, em ordem:</strong></p>
+      <ol style="margin:4px 0 0;padding-left:1.05rem;font-size:.85rem;color:var(--nd-g300)">
+        <li>Notifica por e-mail: rodrigo e eduarda.nardin</li>
+        <li><strong>Cria a negociação no CRM</strong> — Funil Precisian — Comercial, etapa Qualificação</li>
+        <li>Adiciona tags: <code>Precisian</code>, <code>rd crm</code></li>
+        <li>Espera 3 dias — e o fluxo termina aí</li>
+      </ol>
+    </div>
+  </div>
+  <p class="sec-lead" style="margin-top:12px;font-size:.82rem">Do lado do CRM, hoje só existe <strong>1 automação nativa</strong> ("negócio criado → e-mail"). O catálogo abaixo é o que dá pra construir.</p>
+</div></section>
+
+<section class="block" id="sec-autocatalogo"><div class="wrap">
+  <p class="overline">03</p>
+  <h2>Catálogo de automações — o que dá pra construir no RD CRM</h2>
+  <p class="sec-lead">Toda automação nativa do RD CRM é uma dupla <strong>gatilho → ação</strong>. No plano <strong>Advanced</strong> (o da ND) dá pra ter <strong>até 100 automações</strong>, entre modelos prontos e personalizadas (no Pro, até 50).</p>
+
+  <div class="cards2">
+    <div class="c2"><h4>Gatilhos disponíveis</h4><p>Negociação <strong>criada</strong> no funil · negociação <strong>movida de etapa</strong> · <strong>campo personalizado atualizado</strong> · negociação <strong>parada</strong> um tempo numa etapa / sem contato (SLA) · negociação <strong>marcada como ganha</strong> · (via webhook) qualquer mudança → sistema externo.</p></div>
+    <div class="c2"><h4>Ações disponíveis</h4><p>Criar <strong>tarefa</strong> (ligação / WhatsApp / e-mail / visita) com prazo · enviar <strong>e-mail</strong> com modelo · <strong>trocar o responsável</strong> (roleta/distribuição) · <strong>mover de etapa</strong> · criar/duplicar negociação em <strong>outro funil</strong> (ex.: pós-venda) · disparar <strong>WhatsApp / template</strong> — ⚠️ só via RD Conversas ou um iPaaS homologado (Albato etc.), <strong>a ND não tem Conversas</strong>.</p></div>
+  </div>
+
+  <div class="callout warn" style="margin-top:14px">
+    <span class="lbl">A regra dos 5 minutos</span>
+    <p>A chance de qualificar um lead inbound cai <strong>21×</strong> quando o 1º contato passa de 5 min pra 30 min; responder em até 30 min pode aumentar o fechamento em até 60%. O número vem do estudo <strong>Lead Response Management</strong> — a própria RD também cita esse dado em conteúdo dela (ex.: o blog sobre o papel do SDR), não é pesquisa proprietária da plataforma. Por isso o SLA de entrada não é "1 dia" — é minutos. As automações 2 e 3 abaixo existem pra forçar isso.</p>
+  </div>
+
+  <h3 style="margin-top:20px">Fluxos recomendados — do mais essencial ao avançado</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>#</th><th>Objetivo</th><th>Gatilho</th><th>Ação</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><strong>Boas-vindas + 1º contato</strong></td><td>Negociação criada na etapa SQL</td><td>E-mail de confirmação pro lead + cria tarefa "1ª tentativa de contato" pro dono (prazo: agora)</td></tr>
+      <tr><td>2</td><td><strong>SLA de resposta</strong></td><td>Negociação em SQL sem nenhuma interação em 30 min</td><td>Troca o responsável (roleta) — ou, no mínimo, notifica o gestor</td></tr>
+      <tr><td>3</td><td><strong>Distribuição round-robin</strong></td><td>Negociação criada sem responsável</td><td>Alterna o responsável entre os vendedores ativos do time</td></tr>
+      <tr><td>4</td><td><strong>Passagem automática por campo</strong></td><td>Campos "Decisor identificado" = Sim <em>e</em> "Orçamento estimado" preenchido</td><td>Move a negociação de Discovery → Proposta</td></tr>
+      <tr><td>5</td><td><strong>Cadência do Playbook</strong></td><td>Negociação movida pra Proposta</td><td>Cria tarefa "Follow-up de proposta" com prazo +48h (na Negociação: "Cobrar assinatura" +3 dias)</td></tr>
+      <tr><td>6</td><td><strong>Tarefas do Discovery</strong></td><td>Negociação movida pra Discovery</td><td>Cria "Montar proposta" + "Subir a transcrição da reunião"</td></tr>
+      <tr><td>7</td><td><strong>Proposta esfriando</strong></td><td>Negociação parada em Proposta há 3 dias</td><td>Notifica o dono + cria tarefa "Retomar contato"</td></tr>
+      <tr><td>8</td><td><strong>Alerta de inatividade à gestão</strong></td><td>Negociação aberta parada 5–7 dias sem tarefa nem contato</td><td>E-mail pro gestor com a lista</td></tr>
+      <tr><td>9</td><td><strong>Previsão de fechamento vencida</strong></td><td>Negociação aberta com Data de Previsão de Fechamento no passado</td><td>Cria tarefa "Decidir: ganho, perdido ou novo prazo"</td></tr>
+      <tr><td>10</td><td><strong>Handover no Fechado</strong></td><td>Negociação marcada como ganha</td><td>Cria as tarefas de handover (financeiro, jurídico, kick-off) + e-mail interno pro time de operação + cria a negociação espelho no futuro funil de CS/CX</td></tr>
+      <tr><td>11</td><td><strong>Comemoração / repasse</strong></td><td>Negociação marcada como ganha</td><td>E-mail pro time comercial (a ND já tem uma versão disso)</td></tr>
+      <tr><td>12</td><td><strong>Reengajamento por motivo de perda</strong></td><td>Negociação perdida com motivo X (volta o dado pro Marketing)</td><td>"Não está no timing" → nutrição de 2–3 meses · "Achou o valor alto" → oferta com condição especial <span style="opacity:.7">(caso RD: cupom de 10% recuperou 20–30% das perdas por preço)</span></td></tr>
+      <tr><td>13</td><td><strong>Painel próprio / BI</strong></td><td>Webhook: negociação criada ou atualizada</td><td>POST pro n8n / Make / planilha viva → monta forecast e indicadores fora do RD</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout" style="margin-top:12px">
+    <span class="lbl">Ordem de implementação sugerida</span>
+    <p>Começar por <strong>1, 2, 5 e 7</strong> (entrada rápida + cadência + não esfriar) — é o que mais move ponteiro com menos risco. Depois <strong>4, 8, 9</strong> (disciplina de dado). Por último <strong>10, 12, 13</strong> (dependem do funil de CS/CX e de integração externa).</p>
+  </div>
+</div></section>
+
+<section class="block" id="sec-autobacklog"><div class="wrap">
+  <p class="overline">04</p>
+  <h2>O que revisar e construir</h2>
+  <div class="gacc">
+    <div class="gacc-item warn">
+      <button class="gacc-head" onclick="toggleGacc(this)"><span class="d"></span><span class="tit">Toda automação que cria negociação deveria vincular a Empresa</span><span class="tag">corrigir</span><span class="chev">⌄</span></button>
+      <div class="gacc-body"><p>Nenhum dos dois fluxos garante o vínculo com a Empresa nem preenche a Data de Previsão de Fechamento — é a causa provável do volume de negociações sem <code>organization_id</code>. Padrão pra toda automação de criação: (a) sempre gerar/vincular a Empresa, (b) já criar a 1ª tarefa de contato no card, (c) padronizar as tags. Além disso, dá pra travar isso na fonte — ver "tornar o campo Empresa obrigatório" na aba Campos Personalizados, seção 07.</p></div>
+    </div>
+    <div class="gacc-item warn">
+      <button class="gacc-head" onclick="toggleGacc(this)"><span class="d"></span><span class="tit">O fluxo da Precisian parece incompleto</span><span class="tag">confirmar</span><span class="chev">⌄</span></button>
+      <div class="gacc-body"><p>Tem "Espera 3 dias" e nada depois. Confirmar se falta um passo — lembrete, checagem de retorno, notificação de follow-up.</p></div>
+    </div>
+    <div class="gacc-item">
+      <button class="gacc-head" onclick="toggleGacc(this)"><span class="d"></span><span class="tit">Faltam automações pros canais de entrada sem fluxo</span><span class="tag">construir</span><span class="chev">⌄</span></button>
+      <div class="gacc-body"><p>Qualquer origem de lead qualificado fora das listas de gatilho acima entra no CRM sem passar por automação (ou não entra). Mapear todos os canais e cobrir cada um com um fluxo — mesmo que seja um fluxo simples de "cria negociação + notifica".</p></div>
+    </div>
+    <div class="gacc-item">
+      <button class="gacc-head" onclick="toggleGacc(this)"><span class="d"></span><span class="tit">Padronizar a nomenclatura entre Marketing, fluxos e funis</span><span class="tag">alinhar</span><span class="chev">⌄</span></button>
+      <div class="gacc-body"><p>A etapa de entrada é "SQL" no funil ND e "Qualificação" no da Precisian; os fluxos usam tags soltas ("Nação Digital", "rd crm"). Alinhar o vocabulário pra que relatório e automação falem a mesma língua.</p></div>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">Automações · Nação Digital · fontes: Fluxos de Automação do RD Marketing + rdstation.com/produtos/crm/vendas/automacao + metodologia RD (Universidade RD) · 2026-09</div></footer>
+
+</div>
+<!-- ===================== /TAB: AUTOMAÇÕES ===================== -->
+
+<!-- ===================== TAB: MCP ===================== -->
+<div class="panel" id="tab-mcp">
+
+<section class="hero"><div class="wrap">
+  <span class="hero-badge" style="background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.35);color:var(--nd-success)">Duas portas de entrada pro nosso dado</span>
+  <h1>MCP e API — como puxar dado do RD sem digitar tudo de novo</h1>
+  <p class="prose">O RD Station abre duas formas de conectar sistemas externos (inclusive assistentes de IA) aos nossos dados de Marketing, Vendas e Atendimento: <strong><span class="gl">MCP<span class="pop"><b>Model Context Protocol</b> — padrão que conecta assistentes de IA (Claude, ChatGPT etc.) direto aos dados de um sistema, sem copiar e colar informação.</span></span></strong>, pra IA conversar direto com o RD, e <strong><span class="gl">API<span class="pop"><b>Interface de programação</b> — a forma técnica de um sistema trocar dados com o RD Station via código.</span></span></strong>, pra sistemas e automações se conectarem via código.</p>
+</div></section>
+
+<section class="block" id="sec-oquee"><div class="wrap">
+  <p class="overline">01</p>
+  <h2>O que é cada um</h2>
+  <div class="cards2">
+    <div class="c2">
+      <h4>MCP (Model Context Protocol)</h4>
+      <p>Um padrão aberto que conecta assistentes de IA — <strong>Claude, ChatGPT, Gemini</strong>, e ferramentas de automação como <strong>n8n e Make</strong> — direto aos dados do RD Station, sem precisar copiar e colar informação ou reexplicar contexto toda vez. Zero código.</p>
+    </div>
+    <div class="c2">
+      <h4>API</h4>
+      <p>A forma tradicional e técnica de integração: um sistema (nosso ou de terceiros) troca dados com o RD via requisições HTTP autenticadas por token ou OAuth 2.0. É o que dá pra usar pra automações mais específicas, sistemas internos, <strong>webhooks</strong> (o RD te avisa quando algo muda), ou puxar volume de dado pra análise (foi assim que o levantamento de campos personalizados desta aba foi feito).</p>
+    </div>
+  </div>
+  <div class="callout ok" style="margin-top:14px">
+    <span class="lbl">Em uma frase</span>
+    <p>MCP é pra <strong>conversar</strong> com o RD através de uma IA. API é pra <strong>construir</strong> alguma coisa em cima do RD.</p>
+  </div>
+</div></section>
+
+<section class="block" id="sec-configurar"><div class="wrap">
+  <p class="overline">02</p>
+  <h2>Como configurar</h2>
+  <h3>MCP — em minutos, sem código</h3>
+  <p class="sec-lead">O RD gera uma conexão MCP <strong>separada por produto</strong> — uma pra Marketing, uma pra CRM, uma pra Conversas. Gera só a que fizer sentido, ou as três.</p>
+  <ol class="roadmap">
+    <li><h4>Acessar a página de Conectores de IA dentro do RD Station</h4><p>Fica nas configurações da conta. Lá tem os três links de conexão: <strong>RD Station Marketing</strong>, <strong>RD Station CRM</strong> e <strong>RD Station Conversas</strong> — um por produto.</p></li>
+    <li><h4>Gerar a conexão do produto desejado e copiar a URL</h4><p>Não precisa escrever nenhuma linha de código — é copiar e colar.</p></li>
+    <li><h4>Colar a URL no assistente de IA escolhido</h4><p>Claude, ChatGPT, Gemini, ou uma automação em n8n/Make — qualquer ferramenta que já fale o protocolo MCP.</p></li>
+    <li><h4>Autorizar via OAuth 2.0</h4><p>O RD nunca entrega o banco de dados inteiro — a IA só acessa o que for autorizado, respeitando as permissões já configuradas na conta.</p></li>
+  </ol>
+  <div class="callout">
+    <span class="lbl">Fonte oficial e os links de conexão</span>
+    <p>A página oficial é <a href="https://www.rdstation.com/mcp-rd-station/" target="_blank" rel="noopener noreferrer">rdstation.com/mcp-rd-station ↗</a> (visão geral do blog: <a href="https://www.rdstation.com/blog/vendas/mcp-crm-vendas/" target="_blank" rel="noopener noreferrer">mcp-crm-vendas ↗</a>). A <strong>URL de conexão de cada produto é gerada dentro da conta</strong> (Configurações → Conectores de IA) — ela é vinculada ao usuário e não deve ser colada aqui num doc que circula. Cada pessoa gera a sua, ou o admin gera uma de serviço com nível de acesso controlado (ver Segurança).</p>
+  </div>
+  <h3 style="margin-top:24px">API — pra quem vai programar em cima</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Item</th><th>Valor</th></tr></thead>
+    <tbody>
+      <tr><td>Documentação oficial</td><td><a href="https://developers.rdstation.com/" target="_blank" rel="noopener noreferrer">developers.rdstation.com ↗</a> · índice pra IA: <a href="https://developers.rdstation.com/llms.txt" target="_blank" rel="noopener noreferrer">/llms.txt ↗</a></td></tr>
+      <tr><td>Base da API do CRM</td><td><code>https://api.rd.services/crm/v2/</code> (existe também a v1)</td></tr>
+      <tr><td>Autenticação</td><td>Token da conta (v1) ou <strong>OAuth 2.0</strong> com refresh (v2) — OAuth é o mesmo fluxo que o MCP usa</td></tr>
+      <tr><td>Limite de uso</td><td>120 requisições/min (todos os planos) — estoura em <code>429</code> com <code>Retry-After</code></td></tr>
+      <tr><td>Formato</td><td>JSON, datas em ISO 8601 (UTC)</td></tr>
+      <tr><td>Paginação</td><td><code>page[number]</code> / <code>page[size]</code> (padrão 20); teto de 10 mil registros por listagem filtrada</td></tr>
+      <tr><td>Filtro</td><td>linguagem de query <strong>RDQL</strong> nas listagens</td></tr>
+      <tr><td>Recursos da v2</td><td>negociações, contatos, organizações, tarefas, reuniões (+ disponibilidade de agenda), produtos, produtos da negociação, campos personalizados, funis, etapas, origens, campanhas, segmentos, motivos de perda, <strong>anotações</strong>, <strong>arquivos</strong>, <strong>propostas</strong>, times, usuários, <strong>webhooks</strong></td></tr>
+      <tr><td>Webhooks do CRM</td><td><code>crm_deal_created</code> · <code>crm_deal_updated</code> · <code>crm_deal_deleted</code> (planos Basic, Pro e Advanced — inclui o plano da ND) — payload JSON fixo com o objeto completo da negociação; autenticação por header customizado</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<section class="block" id="sec-comparar"><div class="wrap">
+  <p class="overline">03</p>
+  <h2>O que dá pra fazer com cada um</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>Área</th><th>Com MCP (perguntando pra IA)</th></tr></thead>
+    <tbody>
+      <tr><td>Marketing</td><td>Analisar performance de campanha e fluxo de automação · identificar que conteúdo manter, ajustar ou pausar · achar os segmentos que mais convertem</td></tr>
+      <tr><td>Vendas</td><td>Pedir projeção de pipeline com base nas negociações abertas · identificar oportunidade parada e sugerir follow-up · analisar padrão de perda e taxa de vitória</td></tr>
+      <tr><td>Atendimento</td><td>Acompanhar retenção do chatbot e tempo de fila · analisar CSAT e apontar queda de satisfação · comparar tempo médio de atendimento entre períodos</td></tr>
+      <tr><td>Multi-produto</td><td>Cruzar dado de vendas, marketing e atendimento numa pergunta só · achar o gargalo operacional olhando a operação inteira</td></tr>
+    </tbody>
+  </table></div>
+  <p class="sec-lead" style="margin-top:10px">A API entra quando o que se quer não é uma pergunta em linguagem natural, e sim construir algo permanente: uma automação, um painel próprio, uma exportação recorrente.</p>
+
+  <h3 style="margin-top:26px">O que cada recurso permite — direto da documentação oficial</h3>
+  <p class="sec-lead">Isso vale tanto pra quem usa a API quanto pro MCP — o MCP é uma camada de conversa em cima dos mesmos recursos e das mesmas permissões da API.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Recurso</th><th>Criar</th><th>Ler</th><th>Atualizar</th><th>Excluir</th></tr></thead>
+    <tbody>
+      <tr><td>Negociações (Deals)</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✕</td></tr>
+      <tr><td>Contatos</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✕</td></tr>
+      <tr><td>Empresas (Organizations)</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✕</td></tr>
+      <tr><td>Tarefas</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✕</td></tr>
+      <tr><td>Anotações (notes)</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">~</td><td class="yes">~</td></tr>
+      <tr><td>Arquivos (files)</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">~</td><td class="yes">~</td></tr>
+      <tr><td>Propostas (proposals)</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">~</td><td class="no">✕</td></tr>
+      <tr><td>Produtos</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✕</td></tr>
+      <tr><td>Funis / Etapas / Origens / Campanhas / Segmentos</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✕</td></tr>
+      <tr><td>Motivos de Perda</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="no">✕</td></tr>
+      <tr><td>Reuniões (meetings)</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">~</td></tr>
+      <tr><td>Campos Personalizados</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Usuários / Equipes</td><td class="no">✕</td><td class="yes">✓</td><td class="no">✕</td><td class="no">✕</td></tr>
+      <tr><td>Webhooks (assinatura)</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+    </tbody>
+  </table></div>
+  <p class="sec-lead" style="font-size:.78rem;margin-top:6px">✓ confirmado · ~ existe como recurso na v2, método exato a confirmar na doc/num teste · ✕ não disponível. A v2 é mais ampla que a v1 — sempre conferir em <a href="https://developers.rdstation.com/" target="_blank" rel="noopener noreferrer">developers.rdstation.com ↗</a>.</p>
+
+  <div class="cards2">
+    <div class="c2"><h4>"Eu posso abrir e fechar tarefa pela IA?"</h4><p>Abrir sim, direto. Fechar (marcar como concluída) é uma atualização de tarefa — a API tem o método, mas antes de depender disso na rotina vale um teste real com uma tarefa de mentirinha pra confirmar o campo.</p></div>
+    <div class="c2"><h4>"Eu posso criar um indicador ou acompanhar uma meta?"</h4><p><strong>Dentro do RD, os indicadores nativos são os Relatórios do próprio CRM</strong> — a API do CRM não tem endpoint de relatório/meta/dashboard pra <em>criar</em> um. Mas dá pra: (a) pedir pro assistente calcular a métrica na hora a partir do dado bruto; (b) usar os <strong>webhooks</strong> (<code>crm_deal_*</code>) pra mandar cada mudança de negociação pra uma planilha ou BI externo e montar o painel lá; (c) a API do RD <strong>Marketing</strong> tem endpoints de analytics de funil, separados do CRM.</p></div>
+    <div class="c2"><h4>"Dá pra reagir a um evento do CRM em tempo real?"</h4><p>Sim, com <strong>webhook</strong>: negociação criada, atualizada ou excluída dispara um POST pro seu sistema, com o objeto completo. É como se liga o RD a uma planilha viva, um Slack, um n8n. Disponível nos planos Basic e Pro (confirmar no Advanced).</p></div>
+  </div>
+</div></section>
+
+<section class="block" id="sec-seguranca"><div class="wrap">
+  <p class="overline">04</p>
+  <h2>Segurança e rotina de uso</h2>
+  <div class="cards2">
+    <div class="c2"><h4><span class="gl">OAuth 2.0<span class="pop">Protocolo de autorização — garante que o acesso a dados só acontece com permissão explícita, sem expor senha.</span></span>, não cópia de banco</h4><p>A IA nunca recebe o banco de dados inteiro — só o contexto necessário pra cada pergunta, respeitando as permissões já configuradas na conta. Dá pra revogar o acesso a qualquer momento.</p></div>
+    <div class="c2"><h4><span class="gl">LGPD<span class="pop"><b>Lei Geral de Proteção de Dados</b> — a legislação brasileira que regula o uso de dado pessoal.</span></span></h4><p>O fluxo via OAuth 2.0 mantém a conformidade — nenhum dado sai sem autorização explícita.</p></div>
+    <div class="c2"><h4>Custo</h4><p>O RD não cobra a mais pelo tráfego do MCP — o custo de token/crédito é do provedor de IA escolhido (Anthropic, OpenAI, Google).</p></div>
+  </div>
+  <div class="callout err" style="margin-top:16px">
+    <span class="lbl">O acesso é sempre de uma pessoa — não da empresa</span>
+    <p>Tanto o MCP quanto a API ficam vinculados a <strong>quem gerou a conexão</strong> — ela replica o acesso e o nível de permissão daquele usuário específico no RD, não um acesso genérico "da conta". Se esse link for compartilhado como se fosse de uso geral pra todo mundo do time, todo mundo passa a enxergar (e potencialmente agir) com o nível de acesso de quem gerou — inclusive negociações e dados de contas que talvez não devessem estar visíveis pra todo mundo. Mesma lógica de um token de API: antes de gerar e compartilhar uma conexão, decidir com qual usuário (e qual nível de acesso) ela deve nascer.</p>
+  </div>
+  <div class="callout warn" style="margin-top:16px">
+    <span class="lbl">MCP não substitui abrir a ferramenta</span>
+    <p>O MCP e a API <strong>aumentam</strong> o que a gente consegue fazer — não substituem a rotina de abrir o RD CRM de verdade. O time continua com a disciplina de preencher campo, mover etapa e checar o funil dentro da ferramenta; a IA é um atalho pra perguntar e analisar, não o lugar onde o dado é mantido.</p>
+  </div>
+  <p class="sec-lead" style="margin-top:16px">Fontes: <a href="https://www.rdstation.com/mcp-rd-station/" target="_blank" rel="noopener noreferrer">rdstation.com/mcp-rd-station ↗</a> · <a href="https://developers.rdstation.com/" target="_blank" rel="noopener noreferrer">developers.rdstation.com ↗</a></p>
+</div></section>
+
+<footer><div class="wrap">MCP e API · Nação Digital · fontes oficiais RD Station · rev. 2026-09</div></footer>
+
+</div>
+<!-- ===================== /TAB: MCP ===================== -->
+
+<!-- ===================== TAB: MCP USO PRÁTICO ===================== -->
+<div class="panel" id="tab-mcpuso">
+
+<section class="hero"><div class="wrap">
+  <span class="hero-badge" style="background:rgba(155,106,239,.12);border-color:rgba(155,106,239,.4);color:var(--nd-purple-light)">Mão na massa</span>
+  <h1>Uso Prático de MCP no Funil de Vendas</h1>
+  <p class="prose">A aba anterior explicou o que é e como configurar. Esta aqui é o dia a dia: o que dá pra literalmente perguntar pro Claude (ou outro assistente conectado via MCP ao RD CRM) enquanto se trabalha o funil — e onde essa ajuda para.</p>
+</div></section>
+
+<section class="block" id="sec-perguntas"><div class="wrap">
+  <p class="overline">01</p>
+  <h2>Consultar, por etapa</h2>
+  <p class="sec-lead">Com o MCP do RD CRM conectado, isso vira uma pergunta em português normal — sem abrir filtro, sem exportar planilha.</p>
+  <p class="sec-lead" style="margin-top:-6px;font-size:.82rem">Clique num exemplo pra copiar e colar no seu assistente.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Etapa</th><th>Pergunta que dá pra fazer</th></tr></thead>
+    <tbody>
+      <tr><td><strong>SQL</strong></td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Quais leads em SQL estão sem contato há mais de 1 dia?'><span class="ic">⧉</span>Quais leads em SQL estão sem contato há mais de 1 dia?</button>
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Lista as negociações de SQL sem a Data da Discovery preenchida'><span class="ic">⧉</span>Lista as negociações de SQL sem a Data da Discovery preenchida</button>
+      </div></td></tr>
+      <tr><td><strong>Discovery</strong></td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Quais negociações em Discovery estão esfriando?'><span class="ic">⧉</span>Quais negociações em Discovery estão esfriando?</button>
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Quais ainda não têm a ata/transcrição subida no RD?'><span class="ic">⧉</span>Quais ainda não têm a ata/transcrição subida no RD?</button>
+      </div></td></tr>
+      <tr><td><strong>Proposta</strong></td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Quais propostas vencem essa semana?'><span class="ic">⧉</span>Quais propostas vencem essa semana?</button>
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Qual o valor total parado em Proposta hoje?'><span class="ic">⧉</span>Qual o valor total parado em Proposta hoje?</button>
+      </div></td></tr>
+      <tr><td><strong>Negociação</strong></td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Quais negociações passaram da Data de Previsão de Fechamento sem decisão?'><span class="ic">⧉</span>Quais negociações passaram da Data de Previsão de Fechamento sem decisão?</button>
+      </div></td></tr>
+      <tr><td><strong>Fechado</strong></td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Quantas vendas fechamos este mês e qual o ticket médio?'><span class="ic">⧉</span>Quantas vendas fechamos este mês e qual o ticket médio?</button>
+      </div></td></tr>
+      <tr><td><strong>Gestão do funil</strong></td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Resume o pipeline por etapa'><span class="ic">⧉</span>Resume o pipeline por etapa</button>
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Quais os principais motivos de perda deste mês?'><span class="ic">⧉</span>Quais os principais motivos de perda deste mês?</button>
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Quantas negociações estão sem empresa vinculada?'><span class="ic">⧉</span>Quantas negociações estão sem empresa vinculada?</button>
+      </div></td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<section class="block" id="sec-funiltarefas"><div class="wrap">
+  <p class="overline">02</p>
+  <h2>Gestão do funil e de tarefas</h2>
+  <p class="sec-lead">Não é só consultar — dá pra pedir pra agir dentro do RD, sempre com a pessoa revisando o resultado. Abaixo, o que a IA consegue fazer (a API tem Criar/Ler/Atualizar de tarefa e negociação, mas <strong>não</strong> Excluir — ver a tabela de recursos na aba MCP e API) e o que fica fora.</p>
+
+  <h3>Tarefas</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>O que</th><th>Dá?</th><th>Exemplo pra copiar</th></tr></thead>
+    <tbody>
+      <tr><td>Criar tarefa</td><td class="yes">✓</td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Cria uma tarefa pra ligar pro cliente amanhã às 10h nessa negociação'><span class="ic">⧉</span>Cria uma tarefa pra ligar pro cliente amanhã às 10h nessa negociação</button></div></td></tr>
+      <tr><td>Concluir / fechar tarefa</td><td class="yes">✓</td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Marca como concluída a tarefa de follow-up dessa negociação'><span class="ic">⧉</span>Marca como concluída a tarefa de follow-up dessa negociação</button></div>
+        <span class="tfhint">É uma atualização de tarefa — funciona, mas confirme num teste real qual campo o RD usa pra "concluída".</span></td></tr>
+      <tr><td>Remarcar / reatribuir tarefa</td><td class="yes">✓</td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Remarca a tarefa de reunião pra sexta'><span class="ic">⧉</span>Remarca a tarefa de reunião pra sexta</button>
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Passa essa tarefa pro [nome do vendedor]'><span class="ic">⧉</span>Passa essa tarefa pro [nome do vendedor]</button></div></td></tr>
+      <tr><td>Levantar tarefas em aberto</td><td class="yes">✓</td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Lista todas as minhas tarefas em aberto, ordenadas por data'><span class="ic">⧉</span>Lista todas as minhas tarefas em aberto, ordenadas por data</button>
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Quais tarefas estão atrasadas hoje e de quais negociações são?'><span class="ic">⧉</span>Quais tarefas estão atrasadas hoje e de quais negociações são?</button>
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Quais negociações estão sem nenhuma tarefa aberta?'><span class="ic">⧉</span>Quais negociações estão sem nenhuma tarefa aberta?</button></div></td></tr>
+      <tr><td>Prazo da semana</td><td class="yes">✓</td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Monta minha agenda da semana: tarefas com prazo entre hoje e sexta, por dia'><span class="ic">⧉</span>Monta minha agenda da semana: tarefas com prazo entre hoje e sexta, por dia</button></div></td></tr>
+      <tr><td>Excluir tarefa</td><td class="no">✕</td><td>A API não expõe exclusão de tarefa. Dá pra concluir ou remarcar, não apagar.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 style="margin-top:24px">Negociações e funil</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>O que</th><th>Dá?</th><th>Exemplo pra copiar</th></tr></thead>
+    <tbody>
+      <tr><td>Levantar negociações em aberto</td><td class="yes">✓</td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Lista todas as negociações abertas do funil Nação Digital, com etapa, valor e responsável'><span class="ic">⧉</span>Lista todas as negociações abertas do funil Nação Digital, com etapa, valor e responsável</button>
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Quais negociações abertas não têm interação registrada há mais de 7 dias?'><span class="ic">⧉</span>Quais negociações abertas sem interação há mais de 7 dias?</button></div></td></tr>
+      <tr><td>Resumo do pipeline</td><td class="yes">✓</td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Resume o pipeline por etapa: quantidade, valor somado e mais antigo em cada uma'><span class="ic">⧉</span>Resume o pipeline por etapa: quantidade, valor somado e mais antigo em cada uma</button></div></td></tr>
+      <tr><td>Checar gatilho de passagem</td><td class="yes">✓</td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Quais campos ainda faltam pra essa negociação poder avançar de etapa?'><span class="ic">⧉</span>Quais campos ainda faltam pra essa negociação poder avançar de etapa?</button></div></td></tr>
+      <tr><td>Mover de etapa</td><td class="yes">✓</td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Move essa negociação pra Proposta'><span class="ic">⧉</span>Move essa negociação pra Proposta</button></div>
+        <span class="tfhint">Só depois de você confirmar — nunca em lote, nunca automático.</span></td></tr>
+      <tr><td>Marcar Ganho / Perdido</td><td class="no">✕ sem confirmação</td><td>A API atualiza o status, mas decidir que uma negociação foi ganha ou perdida é decisão de pessoa. Peça só caso a caso e revise o motivo de perda.</td></tr>
+      <tr><td>Excluir negociação</td><td class="no">✕</td><td>A API não exclui negociação — o destino é sempre Ganha ou Perdida.</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
+
+<section class="block" id="sec-atualizar"><div class="wrap">
+  <p class="overline">03</p>
+  <h2>Atualizar dados — Lead, Contato, Negociação, Empresa</h2>
+  <p class="sec-lead">Esta é a parte que mais muda a rotina: em vez de abrir o card, achar o campo certo e digitar, é só pedir. O time já tem a informação (às vezes literalmente numa conversa de WhatsApp) — o trabalho de digitar é o que o MCP tira do caminho.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Entidade</th><th>Exemplos do que pedir</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Lead / Contato</strong></td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Atualiza o telefone do [nome] pra [novo número]'><span class="ic">⧉</span>Atualiza o telefone do [nome] pra [novo número]</button>
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Adiciona um novo contato na conta [empresa]: nome, cargo, e-mail — ele também decide'><span class="ic">⧉</span>Adiciona um novo contato na conta [empresa]: nome, cargo, e-mail — ele também decide</button>
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Corrige o cargo do [nome] pra Diretor de Marketing'><span class="ic">⧉</span>Corrige o cargo do [nome] pra Diretor de Marketing</button>
+      </div></td></tr>
+      <tr><td><strong>Negociação</strong></td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Preenche a Dor Principal com o que discutimos na call'><span class="ic">⧉</span>Preenche a Dor Principal com o que discutimos na call</button>
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Atualiza o Valor da negociação pra R$ X'><span class="ic">⧉</span>Atualiza o Valor da negociação pra R$ X</button>
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Coloca a Data de Previsão de Fechamento pra sexta'><span class="ic">⧉</span>Coloca a Data de Previsão de Fechamento pra sexta</button>
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Cola o link da proposta em HTML na Observação'><span class="ic">⧉</span>Cola o link da proposta em HTML na Observação</button>
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Marca como perdida, motivo Achou o valor alto, e escreve na observação por quê'><span class="ic">⧉</span>Marca como perdida, motivo Achou o valor alto, e escreve na observação por quê</button>
+      </div></td></tr>
+      <tr><td><strong>Empresa</strong></td><td><div class="chipwrap">
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Essa negociação está sem empresa vinculada — associa à [empresa]'><span class="ic">⧉</span>Essa negociação está sem empresa vinculada — associa à [empresa]</button>
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Atualiza a cidade e o segmento dessa empresa'><span class="ic">⧉</span>Atualiza a cidade e o segmento dessa empresa</button>
+        <button class="copy-chip" onclick="copyText(this)" data-txt='Corrige o nome, a razão social mudou'><span class="ic">⧉</span>Corrige o nome, a razão social mudou</button>
+      </div></td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout">
+    <span class="lbl">Por que isso importa tanto</span>
+    <p>É exatamente o ponto da sugestão de evolução do funil de CS/CX: o time tem o contato direto com o tomador de decisão pelo WhatsApp, mas hoje precisa pedir pra outra área atualizar um telefone ou incluir um novo colaborador na conta. Com o MCP, quem já está na conversa atualiza o cadastro na hora, sem sair do fluxo de trabalho.</p>
+  </div>
+</div></section>
+
+<section class="block" id="sec-rotina"><div class="wrap">
+  <p class="overline">04</p>
+  <h2>O que isso facilita na rotina</h2>
+  <div class="cards2">
+    <div class="c2"><h4>Início do dia</h4><p>Em vez de abrir o RD e filtrar manualmente, perguntar "o que precisa da minha atenção hoje no meu pipeline?" e já sair com a lista de esfriando, vencendo e sem tarefa.</p></div>
+    <div class="c2"><h4>Rascunho de mensagem</h4><p>Pedir um rascunho de follow-up baseado no histórico real daquela negociação — o texto sai, mas quem lê, ajusta e manda continua sendo a pessoa.</p></div>
+    <div class="c2"><h4>Resumo de reunião</h4><p>Se a transcrição já foi subida na negociação (seção do funil), pedir um resumo rápido antes da próxima conversa com o cliente.</p></div>
+    <div class="c2"><h4>Revisão semanal de pipeline</h4><p>Uma única pergunta cruzando etapa, prazo e motivo de perda substitui boa parte do trabalho manual de montar aquele resumo pra reunião.</p></div>
+  </div>
+</div></section>
+
+<section class="block" id="sec-limites"><div class="wrap">
+  <p class="overline">05</p>
+  <h2>Até onde dá pra ir — e onde para</h2>
+  <div class="cards2">
+    <div class="c2" style="border-left:3px solid var(--nd-success)"><h4>Dá pra usar pra</h4><p>Ler e resumir dado que já está no RD · apontar o que está parado, vencendo ou sem preencher · cruzar Marketing + CRM + Conversas numa pergunta só · gerar rascunho de mensagem ou resumo · atualizar campo, contato, empresa e negociação — desde que a pessoa peça e confira o resultado, igual faria digitando na tela.</p></div>
+    <div class="c2" style="border-left:3px solid var(--nd-error)"><h4>Não é pra usar pra</h4><p>Mover etapa ou decidir Ganho/Perdido <strong>sem</strong> a pessoa confirmar antes · inventar dado que não existe no RD (se não sabe, pergunta, não completa sozinho) · rodar em lote sobre muitas negociações de uma vez sem checar o resultado · virar o lugar onde a informação "mora" — o RD continua sendo o sistema de registro, o assistente só ajuda a consultar e agir mais rápido.</p></div>
+  </div>
+  <div class="callout warn" style="margin-top:16px">
+    <span class="lbl">O alcance depende de quem conectou</span>
+    <p>Se a conexão foi gerada por alguém que só enxerga a própria carteira de negociações, é isso que o assistente vai enxergar também — não existe um "modo admin" só porque é uma IA perguntando. Ver a seção de Segurança na aba anterior.</p>
+  </div>
+</div></section>
+
+<footer><div class="wrap">Uso Prático de MCP · Nação Digital · time comercial · rev. 2026-09</div></footer>
+
+</div>
+<!-- ===================== /TAB: MCP USO PRÁTICO ===================== -->
+
+<!-- ===================== TAB: EXTRAS ===================== -->
+<div class="panel" id="tab-extras">
+
+<section class="hero"><div class="wrap">
+  <span class="hero-badge" style="background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.35);color:var(--nd-success)">Plano Advanced · o que a ND já tem</span>
+  <h1>Ferramentas e Funcionalidades Adicionais</h1>
+  <p class="prose">Além do funil, dos campos e do MCP, o RD Station CRM traz ferramentas de <strong>comunicação ativa com o lead</strong> — a Rê (copiloto de IA), a extensão de WhatsApp, o add-on de IA para Negociações (transcrição de reunião) e o e-mail pela ferramenta. O objetivo desta aba é um só: <strong>a conversa com o lead atualiza o funil</strong>, com o mínimo de digitação.</p>
+  <div class="callout ok">
+    <span class="lbl">Situação na Nação Digital</span>
+    <p>Plano <strong>Advanced</strong> do RD CRM. A <strong>extensão de WhatsApp</strong> (gratuita) e o <strong>e-mail pela ferramenta</strong> já estão em uso. O <strong>add-on de IA para Negociações</strong> (pago, ~R$&nbsp;119/usuário/mês no Advanced) hoje tem cerca de <strong>2 licenças</strong> — confirmar no painel de Configurações o que está ativo e decidir quem usa. <strong>RD Conversas</strong> a ND não tem (há uma ferramenta interna que cobre chatbot, se necessário).</p>
+  </div>
+</div></section>
+
+<section class="block" id="sec-extra-porque"><div class="wrap">
+  <p class="overline">01</p>
+  <h2>A visão: ativação, não digitação</h2>
+  <p class="sec-lead">Hoje o vendedor conversa no WhatsApp, faz a reunião, manda o e-mail — e depois (às vezes) abre o CRM pra registrar. O que essas ferramentas mudam é a ordem: a comunicação acontece e o registro vem junto.</p>
+  <div class="fmap" style="margin-top:14px">
+    <div class="maprow"><span class="mapfrom">Pergunta / dita pra Rê no WhatsApp</span><span class="mapar">→</span><span class="mapto">consulta o pipeline, cria tarefa e lembrete</span></div>
+    <div class="maprow"><span class="mapfrom">Conversa pelo WhatsApp Web com a extensão</span><span class="mapar">→</span><span class="mapto">histórico, áudio e notas salvos na negociação</span></div>
+    <div class="maprow"><span class="mapfrom">Faz a reunião com o add-on de IA para Negociações</span><span class="mapar">→</span><span class="mapto">transcrição, resumo, campos e próximos passos no card</span></div>
+    <div class="maprow"><span class="mapfrom">Manda o e-mail de dentro do card</span><span class="mapar">→</span><span class="mapto">registro automático + rastreio de abertura</span></div>
+  </div>
+  <p class="sec-lead" style="margin-top:12px;font-size:.82rem">Isto é a base prática do funil de <strong>CS e CX</strong> e da ideia de <strong>funis integrados</strong> das "Sugestões de evolução" (aba Funil ND) — só funciona se o dado da conversa chegar no CRM sozinho.</p>
+</div></section>
+
+<section class="block" id="sec-extra-re"><div class="wrap">
+  <p class="overline">02</p>
+  <h2>Rê — Copiloto de IA no WhatsApp</h2>
+  <p class="sec-lead">A <strong>Rê</strong> é o assistente virtual do RD Station CRM. Você fala com ela pelo WhatsApp — <strong>voz ou texto, em português normal</strong> — de qualquer lugar, e ela acessa e atualiza o CRM em tempo real. Ela entende áudio até com sotaque. É a forma mais rápida de manter o funil vivo sem abrir o sistema.</p>
+  <p class="sec-lead" style="margin-top:-4px;font-size:.82rem">Clique num exemplo pra copiar. São frases de comando — o jeito que você realmente escreve/fala pra Rê.</p>
+
+  <span class="k" style="color:var(--nd-purple-light);margin-top:18px">Criar</span>
+  <div class="chipwrap">
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Cria uma negociação pra [empresa] no funil Nação Digital, etapa SQL'><span class="ic">⧉</span>Criar oportunidade / negociação num funil e etapa</button>
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Cadastra o contato [nome], cargo [cargo], telefone [número], da empresa [empresa]'><span class="ic">⧉</span>Cadastrar contato (com cargo, telefone, empresa)</button>
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Cria a empresa [nome], site [url], segmento [segmento]'><span class="ic">⧉</span>Cadastrar empresa</button>
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Cria uma tarefa: ligar pro [nome] amanhã às 15h nessa negociação'><span class="ic">⧉</span>Criar tarefa com data e hora</button>
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Me lembra de dar retorno pro [nome] na sexta de manhã'><span class="ic">⧉</span>Criar lembrete</button>
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Adiciona uma anotação na negociação do [nome]: cliente pediu pra revisar o escopo antes de fechar'><span class="ic">⧉</span>Adicionar anotação / observação na negociação</button>
+  </div>
+
+  <span class="k" style="color:var(--nd-purple-light);margin-top:16px">Atualizar</span>
+  <div class="chipwrap">
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Move a negociação do [nome] pra etapa Proposta'><span class="ic">⧉</span>Mover a negociação de etapa</button>
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Marca a negociação do [nome] como ganha'><span class="ic">⧉</span>Marcar como ganha</button>
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Marca como perdida, motivo Achou o valor alto, e anota o porquê na observação'><span class="ic">⧉</span>Marcar como perdida com motivo</button>
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Atualiza o campo Orçamento estimado dessa negociação pra R$ 12 mil'><span class="ic">⧉</span>Preencher / atualizar um campo (inclusive personalizado)</button>
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Atualiza a Data de Previsão de Fechamento dessa negociação pra 20/10'><span class="ic">⧉</span>Atualizar a Data de Previsão de Fechamento</button>
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Registra o que discutimos na visita: [texto ou áudio do resumo]'><span class="ic">⧉</span>Registrar o resumo de uma visita / ligação</button>
+  </div>
+  <div class="callout-mini" style="margin-top:8px">
+    <span class="lbl">Check-in por localização</span>
+    <p>Mandar a <strong>localização</strong> pra Rê durante uma visita → ela cria um check-in automático, registrado como anotação na negociação (com hora).</p>
+  </div>
+
+  <span class="k" style="color:var(--nd-info);margin-top:16px">Consultar</span>
+  <div class="chipwrap">
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Resume meu pipeline por etapa'><span class="ic">⧉</span>Resumo do pipeline por etapa</button>
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Quais negociações minhas estão paradas há mais de 7 dias?'><span class="ic">⧉</span>Negociações paradas</button>
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Quantas negociações foram cadastradas hoje?'><span class="ic">⧉</span>Negociações criadas num período</button>
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Me mostra o histórico da negociação do [nome]'><span class="ic">⧉</span>Histórico de uma negociação / contato</button>
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Quais são minhas tarefas de hoje?'><span class="ic">⧉</span>Tarefas do dia</button>
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Como eu configuro um motivo de perda novo no CRM?'><span class="ic">⧉</span>Dúvida sobre o próprio CRM</button>
+  </div>
+
+  <span class="k" style="color:var(--nd-success);margin-top:16px">Analisar e recomendar</span>
+  <div class="chipwrap">
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Qual o melhor próximo passo pra avançar a negociação do [nome]?'><span class="ic">⧉</span>Próximo passo de uma negociação</button>
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Quais os principais motivos de perda deste mês e tem algum padrão?'><span class="ic">⧉</span>Padrão nos motivos de perda</button>
+    <button class="copy-chip" onclick="copyText(this)" data-txt='Quais das minhas negociações abertas têm mais chance de fechar?'><span class="ic">⧉</span>Priorização — quais têm mais chance de fechar</button>
+  </div>
+
+  <h3 style="margin-top:24px">Cenários de uso — quando a Rê ganha o dia</h3>
+  <div class="cards2">
+    <div class="c2"><h4>Saindo da reunião, no carro</h4><p>Áudio de 30s: "acabei o Discovery com a [empresa], move pra Proposta, orçamento gira em torno de 15 mil, decisor é o [nome], previsão de fechamento fim do mês, cria tarefa de montar proposta pra amanhã." A Rê faz tudo.</p></div>
+    <div class="c2"><h4>Durante a visita ao cliente</h4><p>Manda a localização (check-in) e dita as observações na hora — não depende de lembrar de tudo quando voltar pra mesa.</p></div>
+    <div class="c2"><h4>Fim do dia</h4><p>"Resume meu pipeline e me diz o que está parado" — sai com a lista do que cobrar amanhã sem abrir relatório.</p></div>
+    <div class="c2"><h4>Antes da próxima call</h4><p>"Me mostra o histórico da negociação do [nome]" — chega na reunião sabendo o que já foi conversado.</p></div>
+  </div>
+
+  <h3 style="margin-top:24px">Rê × Extensão de WhatsApp × MCP — quando usar cada uma</h3>
+  <div class="scroll"><table>
+    <thead><tr><th></th><th>Rê (Copiloto)</th><th>Extensão de WhatsApp</th><th>MCP</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Onde</strong></td><td>você conversa com a Rê no WhatsApp</td><td>painel lateral no WhatsApp Web, junto da conversa com o cliente</td><td>qualquer assistente (Claude, ChatGPT…)</td></tr>
+      <tr><td><strong>Como</strong></td><td>manda mensagem ou áudio</td><td>clica nos campos na tela</td><td>pergunta em linguagem livre</td></tr>
+      <tr><td><strong>Precisa</strong></td><td>licença de IA (~2 hoje)</td><td>extensão grátis instalada</td><td>conexão MCP configurada</td></tr>
+      <tr><td><strong>Melhor pra</strong></td><td>registrar rápido de qualquer lugar, sem olhar tela</td><td>trabalhar a conversa com o cliente aberta na frente</td><td>análise, cruzar Marketing + CRM, volume</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout">
+    <span class="lbl">Como falar com a Rê (regras dela)</span>
+    <p><strong>Faça:</strong> uma pergunta/pedido por vez · seja específico ("leads de janeiro", não "leads") · comandos diretos ("criar tarefa reunião cliente X") · espere a resposta antes de mandar a próxima.</p>
+    <p><strong>Evite:</strong> mensagens seguidas sem esperar · textos longos · várias solicitações juntas na mesma mensagem.</p>
+  </div>
+  <div class="callout warn">
+    <span class="lbl">Escopo e licenças a confirmar</span>
+    <p>Parte do que a Rê faz é nativa do CRM; parte depende do <strong>add-on de IA para Negociações</strong> (seção 04). Conferir em <strong>Configurações → IA para Negociações</strong> o que está ativo e quantas licenças (hoje ~2) — e definir quem usa. Fontes da RD divergem sobre o plano mínimo; no Advanced (o da ND) está coberto.</p>
+  </div>
+  <div class="callout">
+    <span class="lbl">Mesma régua da aba MCP</span>
+    <p>A Rê é assistente: registra e sugere, a pessoa confere. Não deixar ela decidir ganho/perdido nem mover etapa sem o vendedor confirmar — e sempre revisar o que ela preencheu.</p>
+  </div>
+</div></section>
+
+<section class="block" id="sec-extra-whats"><div class="wrap">
+  <p class="overline">03</p>
+  <h2>Extensão "CRM de Vendas para WhatsApp"</h2>
+  <p class="sec-lead">Extensão <strong>gratuita</strong> do Google Chrome que adiciona funcionalidades do RD Station CRM ao <strong>WhatsApp Web</strong>. Já está em uso na ND. Só funciona com o RD Station CRM (não com outro CRM).</p>
+  <div class="cards2">
+    <div class="c2"><h4>Negocie com seus clientes</h4><p>Crie, atualize ou edite as negociações quando um contato te chamar — sem trocar de aba.</p></div>
+    <div class="c2"><h4>Tenha todo o histórico</h4><p>Crie anotações e tarefas, salve o histórico das conversas e os áudios no CRM.</p></div>
+    <div class="c2"><h4>Mensagens personalizadas</h4><p>Responda rápido com respostas/templates prontos.</p></div>
+  </div>
+
+  <h3 style="margin-top:20px">Funcionalidades por plano</h3>
+  <p class="sec-lead" style="font-size:.82rem">A extensão existe nos planos Free, Basic e Pro do CRM. A ND está no <strong>Advanced</strong> — tem o nível mais completo (equivalente ao Pro, com salvar áudio).</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Funcionalidade</th><th>Free</th><th>Basic</th><th>Pro / Advanced</th></tr></thead>
+    <tbody>
+      <tr><td>Criar negociação</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Editar negociação</td><td class="no">✕</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Mover no funil de vendas</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Alterar status (ganho / perdido)</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Criar anotações</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Criar tarefas</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Criar tipo de tarefa</td><td class="no">✕</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Salvar histórico das conversas</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+      <tr><td>Mensagens personalizadas</td><td class="no">✕</td><td class="yes">✓ (10/usuário)</td><td class="yes">✓ (20/usuário)</td></tr>
+      <tr><td>Salvar áudios do WhatsApp no CRM</td><td class="no">✕</td><td class="no">✕</td><td class="yes">✓</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout">
+    <span class="lbl">Como instalar (por pessoa)</span>
+    <p>Instalar a extensão pela Chrome Web Store → abrir o WhatsApp Web no Chrome → na barra lateral, logar com o <strong>mesmo e-mail e senha do RD Station CRM</strong> → se tiver mais de uma conta, escolher a conta certa.</p>
+  </div>
+  <div class="callout warn">
+    <span class="lbl">Limites</span>
+    <p>Só no <strong>WhatsApp Web</strong> (Chrome). Atendimento <strong>1:1</strong> — cada pessoa loga com o próprio acesso. <strong>Não faz disparo em massa, chatbot nem campanha</strong> — isso é RD Conversas.</p>
+  </div>
+  <div class="callout ok">
+    <span class="lbl">Onde encaixa no funil</span>
+    <p>É aqui que o "registrar a conversa na negociação" das etapas <strong>SQL, Proposta e Negociação</strong> (aba Funil ND) acontece na prática — a troca de WhatsApp vira histórico do card sem digitação dupla.</p>
+  </div>
+</div></section>
+
+<section class="block" id="sec-extra-ia"><div class="wrap">
+  <p class="overline">04</p>
+  <h2>Add-on: IA para Negociações + Sales Enablement</h2>
+  <p class="sec-lead">Este é <strong>add-on pago</strong>, contratado à parte do plano — não vem incluso no Advanced. No Advanced, o pacote é <strong>~R$&nbsp;119/mês por usuário</strong> e libera o nível máximo (IA para Negociações Pro + Sales Enablement). É o que faz "a conversa virar dado" de verdade.</p>
+
+  <h3>O que ele entrega</h3>
+  <div class="cards2">
+    <div class="c2"><h4>CRM atualizado sem digitar</h4><p>Ligações, reuniões (Meet, Zoom) e conversas de WhatsApp são transcritas, os participantes identificados, e viram <strong>campos preenchidos + resumo + próximos passos</strong> no card, em segundos. Sem instalar nada.</p></div>
+    <div class="c2"><h4>Nota por reunião</h4><p>Cada vendedor recebe uma avaliação da conversa; o gestor acompanha a performance individual vs. equipe sem esperar o fim do mês.</p></div>
+    <div class="c2"><h4>Padrões que ninguém vê sozinho</h4><p>A IA agrupa quais concorrentes são citados, quais dúvidas se repetem e como cada vendedor evolui semana a semana.</p></div>
+    <div class="c2"><h4>Temperatura do lead</h4><p>Com base no que foi dito nas transcrições, o CRM indica se o lead está pronto pra comprar — pra priorizar as negociações quentes.</p></div>
+  </div>
+
+  <h3 style="margin-top:20px">Como funciona, em 3 passos</h3>
+  <ol style="margin:8px 0 0;padding-left:1.15rem;font-size:.88rem;color:var(--nd-g200)">
+    <li><strong>A reunião é gravada e transcrita</strong> — o vendedor entra na call (Meet, Zoom ou WhatsApp); a IA grava, transcreve e identifica cada participante.</li>
+    <li><strong>O CRM é atualizado automaticamente</strong> — resumo, campos personalizados e próximos passos entram no card. Zero digitação. E-mails pré e pós-reunião com templates editáveis.</li>
+    <li><strong>Gestão com visibilidade total</strong> — a IA agrupa temas, dúvidas e menções de concorrentes por vendedor e por semana.</li>
+  </ol>
+
+  <div class="callout warn">
+    <span class="lbl">Detalhes de contratação</span>
+    <p>Contrata em <strong>Configurações → IA para Negociações e IA para Sales Enablement → Comprar</strong>. O add-on é vinculado ao plano do CRM (Advanced → pacote máximo). Sales Enablement <strong>não</strong> funciona sozinho — precisa da IA para Negociações ativa.</p>
+    <p>Relatórios e configurações da IA ficam numa <strong>aplicação separada do CRM, com login e senha próprios</strong>.</p>
+    <p><strong>Na ND:</strong> ~2 licenças hoje. Confirmar o que está ativo e definir quem usa (ideal: quem faz Discovery e reunião de proposta).</p>
+  </div>
+  <div class="callout ok">
+    <span class="lbl">Resolve uma tarefa que já está no funil</span>
+    <p>As tarefas "<strong>subir a ata / transcrição da reunião no RD</strong>" do Discovery e da Proposta (aba Funil ND) passam a ser automáticas <em>para quem tiver a licença</em> — sem anotação manual nem ferramenta externa.</p>
+  </div>
+</div></section>
+
+<section class="block" id="sec-extra-com"><div class="wrap">
+  <p class="overline">05</p>
+  <h2>E-mail pela ferramenta</h2>
+  <p class="sec-lead">Nativo do CRM, já em uso na ND. Enviar e acompanhar e-mail sem sair do card da negociação.</p>
+  <ul style="margin:8px 0 0;padding-left:1.05rem;font-size:.88rem;color:var(--nd-g200)">
+    <li>Enviar e-mail de dentro do card, com <strong>modelos</strong></li>
+    <li><strong>Rastreio</strong> de abertura e resposta</li>
+    <li>Registro automático nas anotações da negociação</li>
+  </ul>
+  <div class="callout">
+    <span class="lbl">Onde encaixa</span>
+    <p>Os follow-ups de <strong>Proposta</strong> e <strong>Negociação</strong> e as automações sugeridas saem daqui. As "Mensagens" prontas nos painéis das etapas (aba Funil ND) viram <strong>modelos de e-mail</strong>.</p>
+  </div>
+</div></section>
+
+<section class="block" id="sec-extra-conversas"><div class="wrap">
+  <p class="overline">06</p>
+  <h2>RD Conversas — o que falta (e o que a ND tem no lugar)</h2>
+  <p class="sec-lead">A ND <strong>não tem RD Conversas</strong>. Hoje o item fica fora do escopo — esta seção só registra o que ele acrescentaria, pra virar aba própria quando fizer sentido.</p>
+  <div class="cards2">
+    <div class="c2"><h4>O que o RD Conversas traz</h4><p>Caixa de entrada compartilhada, chatbot, distribuição de atendimento entre agentes, vários atendentes num mesmo número, histórico unificado dos canais digitais.</p></div>
+    <div class="c2"><h4>O que a ND usa no lugar</h4><p>Uma ferramenta interna que pode cobrir a parte de <strong>chatbot</strong>, se e quando for necessário. Não substitui a caixa compartilhada nem a distribuição.</p></div>
+    <div class="c2"><h4>Quando reavaliar</h4><p>Se o volume de atendimento 1:1 pelo WhatsApp crescer a ponto de precisar de fila, múltiplos atendentes e SLA de resposta — aí o RD Conversas (ou equivalente) passa a fazer sentido.</p></div>
+  </div>
+  <p class="sec-lead" style="margin-top:16px;font-size:.8rem">Fontes: <a href="https://www.rdstation.com/produtos/crm/vendas/vender-pelo-whatsapp/" target="_blank" rel="noopener noreferrer">rdstation.com/produtos/crm/vendas/vender-pelo-whatsapp ↗</a> · <a href="https://www.rdstation.com/produtos/crm/" target="_blank" rel="noopener noreferrer">rdstation.com/produtos/crm ↗</a> · <a href="https://www.rdstation.com/inteligencia-artificial/" target="_blank" rel="noopener noreferrer">rdstation.com/inteligencia-artificial ↗</a> · <a href="https://ajuda.rdstation.com/s/article/Adicionar-extens%C3%A3o-What-Station?language=pt_BR" target="_blank" rel="noopener noreferrer">ajuda RD — extensão WhatStation ↗</a> · <a href="https://www.rdstation.com/produtos/conversas/" target="_blank" rel="noopener noreferrer">rdstation.com/produtos/conversas ↗</a></p>
+</div></section>
+
+<footer><div class="wrap">Ferramentas e Funcionalidades Adicionais · Nação Digital · plano Advanced · fontes oficiais RD Station · rev. 2026-09</div></footer>
+
+</div>
+<!-- ===================== /TAB: EXTRAS ===================== -->
+
+<script>
+  function toggleGacc(btn){
+    btn.closest('.gacc-item').classList.toggle('open');
+  }
+  function filterTable(input, tableId){
+    var q = input.value.trim().toLowerCase();
+    var rows = document.querySelectorAll('#'+tableId+' tbody tr');
+    rows.forEach(function(tr){
+      tr.hidden = q !== '' && tr.textContent.toLowerCase().indexOf(q) === -1;
+    });
+  }
+  function copyText(el){
+    var txt = el.getAttribute('data-txt');
+    var ic = el.querySelector('.ic');
+    var prev = ic.textContent;
+    function done(){
+      el.classList.add('copied');
+      ic.textContent = '✓';
+      setTimeout(function(){ el.classList.remove('copied'); ic.textContent = prev; }, 1400);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(done, done);
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = txt; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); } catch(e){}
+      document.body.removeChild(ta);
+      done();
+    }
+  }
+  document.addEventListener('click', function(e){
+    var gl = e.target.closest('.gl');
+    document.querySelectorAll('.gl.open').forEach(function(g){ if (g !== gl) g.classList.remove('open'); });
+    if (gl){ gl.classList.toggle('open'); }
+  });
+  function switchTab(id, btn){
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+    document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+    document.querySelectorAll('.subnav').forEach(function(s){s.classList.remove('active');});
+    btn.classList.add('active');
+    document.getElementById('tab-'+id).classList.add('active');
+    document.getElementById('subnav-'+id).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function openPanel(id, btn){
+    var area = document.getElementById('funnelArea');
+    var already = btn.classList.contains('active');
+    document.querySelectorAll('.fband').forEach(function(b){b.classList.remove('active');});
+    document.querySelectorAll('.detail-panel').forEach(function(p){p.classList.remove('active');});
+    if (already){ area.classList.remove('expanded'); return; }
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+    area.classList.add('expanded');
+  }
+  function closePanel(){
+    document.getElementById('funnelArea').classList.remove('expanded');
+    document.querySelectorAll('.fband').forEach(function(b){b.classList.remove('active');});
+    document.querySelectorAll('.detail-panel').forEach(function(p){p.classList.remove('active');});
+  }
+</script>
