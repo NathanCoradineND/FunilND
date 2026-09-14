@@ -274,9 +274,11 @@
   <a href="#sec-nativo">Nativo e Personalizado</a>
   <a href="#sec-integracao">Integração Marketing → CRM</a>
   <a href="#sec-achados">Achados principais</a>
+  <a href="#sec-motivos">Motivos de Perda</a>
   <a href="#sec-negociacao">Negociações</a>
   <a href="#sec-empresa">Empresa</a>
   <a href="#sec-contato">Contatos</a>
+  <a href="#sec-cancelamento">Motivo de Cancelamento</a>
 </div></nav>
 <nav class="subnav" id="subnav-automacoes"><div class="wrap">
   <a href="#sec-autocomo">Como o lead vira negociação</a>
@@ -520,7 +522,8 @@
   </table></div>
   <div class="callout warn" style="margin-top:10px">
     <span class="lbl">Sobre o motivo "Outros"</span>
-    <p>A RD não tem uma regra explícita de "não use Outros" — a orientação oficial (ebook de motivos de perda) é evitar motivo genérico demais, porque isso vira "lixeira" de dado e esconde o motivo real das perdas. Como ele já está cadastrado na conta, a regra mínima é: <strong>sempre escrever na Observação por que perdeu</strong>, e se "Outros" virar um dos motivos mais usados, cadastrar um motivo novo e específico e parar de usar o genérico. A meta é chegar a zero "Outros".</p>
+    <p>A RD não tem uma regra explícita de "não use Outros" — a orientação oficial (ebook de motivos de perda) é evitar motivo genérico demais, porque isso vira "lixeira" de dado e esconde o motivo real das perdas. Como ele já está cadastrado na conta, a regra mínima é: <strong>sempre escrever na Observação por que perdeu</strong>, e se "Outros" virar um dos motivos mais usados, cadastrar um motivo novo e específico e parar de usar o genérico. A meta é chegar a zero "Outros" — hoje ele já é o 3º motivo mais usado no ND (2 de 14 perdas), ver uso real por funil na aba <a href="#" onclick="switchTab('campos',document.querySelector('[data-tab=campos]'));return false">Campos Personalizados</a>.</p>
+    <p style="margin-top:8px">Motivo de Perda é um campo <strong>global da conta</strong>, não é exclusivo do funil ND — o mesmo dropdown de 9 motivos aparece em qualquer negociação de qualquer funil (Precisian incluído). Criar um motivo novo pensando só no ND afeta todo mundo; decisão de criar/aposentar motivo é combinada entre os funis, não decisão isolada de um time.</p>
   </div>
 </div></section>
 
@@ -837,22 +840,27 @@
       <p><code>job_title</code> existe no Contato, mas a amostra não trouxe nenhum contato com o campo preenchido. Isso é processo, não é ferramenta faltando.</p>
     </div>
 
-    <h3 style="margin-top:24px">Motivos de perda cadastrados (<code>lost_reason_id</code>)</h3>
-    <p class="sec-lead">O campo é nativo — os 9 valores abaixo são a configuração cadastrada hoje na plataforma, a mesma lista usada na seção 03 do funil.</p>
+    <h3 style="margin-top:24px;scroll-margin-top:145px" id="sec-motivos">Motivos de Perda (<code>lost_reason_id</code>) — campo global, não por funil</h3>
+    <p class="sec-lead">O campo é nativo — os 9 valores abaixo são a configuração cadastrada hoje na plataforma (conferido em Configurações → Motivo de Perda). A tabela mostra o uso <strong>real</strong>, contado negociação por negociação nas perdas de cada funil (14 no ND, 4 no Precisian) — substitui a versão anterior desta tabela, que estimava a etapa pelo nome do motivo em vez de medir.</p>
+    <div class="callout err">
+      <span class="lbl">Achado: motivo de perda é da conta inteira, não do funil</span>
+      <p>Diferente dos campos personalizados (que têm <code>display_rules</code> por <code>pipeline_id</code>), a lista de Motivos de Perda não tem amarração de funil na API — é uma única lista, compartilhada por <strong>todos</strong> os pipelines da conta (ND, Precisian, Outbound, Alocação…). Criar um motivo pensando só no Precisian faz ele aparecer também no dropdown de qualquer negociação do ND, e vice-versa. Não dá pra restringir isso na ferramenta — só dá pra combinar com quem cuida dos outros funis antes de criar um motivo novo.</p>
+    </div>
     <div class="scroll"><table>
-      <thead><tr><th>Motivo</th><th>Em quais etapas costuma aparecer</th></tr></thead>
+      <thead><tr><th>Motivo</th><th>Perdas no ND (14)</th><th>Perdas no Precisian (4)</th><th>Leitura</th></tr></thead>
       <tbody>
-        <tr><td>Achou o valor alto</td><td>Proposta · Negociação</td></tr>
-        <tr><td>Cliente não retornou</td><td>Qualquer etapa</td></tr>
-        <tr><td>Concorre com cliente da casa</td><td>SQL</td></tr>
-        <tr><td>Fechou com outra empresa</td><td>Proposta · Negociação</td></tr>
-        <tr><td>Não está no timing</td><td>Discovery · Proposta</td></tr>
-        <tr><td>Não tem Perfil</td><td>SQL</td></tr>
-        <tr><td>Outros</td><td>Qualquer etapa — sempre com Observação explicando o porquê</td></tr>
-        <tr><td>Sumiu do Mapa</td><td>SQL · Discovery</td></tr>
-        <tr><td>Vai internalizar</td><td>Proposta · Negociação</td></tr>
+        <tr><td>Não está no timing</td><td class="tab-num" style="text-align:center">4</td><td class="tab-num" style="text-align:center">0</td><td><span class="tagfield nd">só ND, na prática</span></td></tr>
+        <tr><td>Achou o valor alto</td><td class="tab-num" style="text-align:center">3</td><td class="tab-num" style="text-align:center">0</td><td><span class="tagfield nd">só ND, na prática</span></td></tr>
+        <tr><td>Sumiu do Mapa</td><td class="tab-num" style="text-align:center">2</td><td class="tab-num" style="text-align:center">1</td><td><span class="tagfield geral">compartilhado</span></td></tr>
+        <tr><td>Outros</td><td class="tab-num" style="text-align:center">2</td><td class="tab-num" style="text-align:center">1</td><td><span class="tagfield geral">compartilhado</span></td></tr>
+        <tr><td>Cliente não retornou</td><td class="tab-num" style="text-align:center">1</td><td class="tab-num" style="text-align:center">0</td><td><span class="tagfield nd">só ND, na prática</span></td></tr>
+        <tr><td>Vai internalizar</td><td class="tab-num" style="text-align:center">1</td><td class="tab-num" style="text-align:center">1</td><td><span class="tagfield geral">compartilhado</span></td></tr>
+        <tr><td>Fechou com outra empresa</td><td class="tab-num" style="text-align:center">1</td><td class="tab-num" style="text-align:center">1</td><td><span class="tagfield geral">compartilhado</span></td></tr>
+        <tr><td>Não tem Perfil</td><td class="tab-num" style="text-align:center">0</td><td class="tab-num" style="text-align:center">0</td><td><span class="tagfield bug">nunca usado</span></td></tr>
+        <tr><td>Concorre com cliente da casa</td><td class="tab-num" style="text-align:center">0</td><td class="tab-num" style="text-align:center">0</td><td><span class="tagfield bug">nunca usado</span></td></tr>
       </tbody>
     </table></div>
+    <p class="sec-lead" style="margin-top:8px;font-size:.82rem"><strong>"Só ND, na prática"</strong> = nenhuma perda do Precisian usou esse motivo até hoje (não significa que está travado pro Precisian — é só o que aconteceu). <strong>"Nunca usado"</strong> = está cadastrado, mas nenhuma negociação de nenhum funil da conta perdeu por esse motivo ainda — candidato a revisar se ainda faz sentido manter, junto com "Outros" (seção 03 do Funil ND: meta é zerar o uso de "Outros").</p>
   </div>
 </section>
 
@@ -911,16 +919,18 @@
 <section class="block" id="sec-empresa">
   <div class="wrap">
     <p class="overline">04</p>
-    <h2>Empresa (Organization) — 3 campos personalizados</h2>
+    <h2>Empresa (Organization) — 5 campos personalizados <span class="tagfield" style="background:rgba(96,165,250,.12);color:var(--nd-info);border:1px solid rgba(96,165,250,.3)">2 novos desde a auditoria</span></h2>
     <div class="scroll"><table>
       <thead><tr><th>Campo</th><th>Tipo</th><th>Observação</th></tr></thead>
       <tbody>
         <tr><td>Cidade</td><td>texto</td><td>—</td></tr>
-        <tr><td>Estado</td><td>seleção única</td><td><span class="tagfield bug">sem opções cadastradas — campo quebrado, corrigir</span></td></tr>
+        <tr><td>Estado</td><td>seleção única</td><td><span class="tagfield bug">sem opções cadastradas — campo quebrado, continua sem correção</span></td></tr>
         <tr><td>Produtos</td><td>texto</td><td>—</td></tr>
+        <tr><td>CNPJ</td><td>CNPJ</td><td><span class="tagfield" style="background:rgba(96,165,250,.12);color:var(--nd-info);border:1px solid rgba(96,165,250,.3)">criado 10/09</span></td></tr>
+        <tr><td>Sobre</td><td>texto</td><td><span class="tagfield" style="background:rgba(96,165,250,.12);color:var(--nd-info);border:1px solid rgba(96,165,250,.3)">criado 10/09</span></td></tr>
       </tbody>
     </table></div>
-    <p class="sec-lead" style="margin-top:10px">Campos nativos: <code>id, name, description, url, address (line, latitude, longitude), segment_ids, follower_ids, owner_id, custom_fields, created_at, updated_at</code> — <code>segment_ids</code> já cobre "Segmento", não precisa de campo novo.</p>
+    <p class="sec-lead" style="margin-top:10px">Campos nativos: <code>id, name, description, url, address (line, latitude, longitude), segment_ids, follower_ids, owner_id, custom_fields, created_at, updated_at</code> — <code>segment_ids</code> já cobre "Segmento", não precisa de campo novo. Nenhum dos 5 campos de Empresa tem <code>display_rules</code> preenchido na API — diferente da Negociação, campo de Empresa hoje não tem como ser restrito a um funil específico (mesma limitação que afeta Motivo de Perda e, se for criado como campo de Empresa, o futuro Motivo de Cancelamento — ver seção 06).</p>
   </div>
 </section>
 
@@ -953,11 +963,15 @@
       <div class="c2"><h4>Forma de pagamento</h4><p>Lista — preenchido na Negociação</p></div>
     </div>
 
-    <h3 style="margin-top:22px">Motivo de Cancelamento — não existe hoje</h3>
-    <p class="sec-lead">Levantado na reunião de 08/09: hoje existe <strong>Motivo de Perda</strong> (por que uma negociação não fechou) mas <strong>não existe Motivo de Cancelamento</strong> — por que um cliente já ativo encerrou o contrato. São coisas diferentes e nenhum campo cobre a segunda hoje.</p>
+    <h3 style="margin-top:22px;scroll-margin-top:145px" id="sec-cancelamento">Motivo de Cancelamento — não existe hoje <span class="tagfield bug">confirmado via API 14/09: ainda não criado</span></h3>
+    <p class="sec-lead">Levantado na reunião de 08/09: hoje existe <strong>Motivo de Perda</strong> (por que uma negociação não fechou) mas <strong>não existe Motivo de Cancelamento</strong> — por que um cliente já ativo encerrou o contrato. São coisas diferentes e nenhum campo cobre a segunda hoje. Conferido de novo em 14/09 direto na lista de campos de Empresa (seção 04): só existem Cidade, Estado, Produtos, CNPJ e Sobre — nenhum deles é isso.</p>
     <div class="cards2">
       <div class="c2" style="border-left:3px solid var(--nd-purple)"><h4>Motivo de Cancelamento <span class="tagfield bug" style="margin-left:6px">a criar</span></h4><p>Seleção única, lista fechada (sem "Outros" — mesma régua do Motivo de Perda). Candidatos: inadimplência, insatisfação com resultado, corte de orçamento do cliente, encerramento da operação do cliente, decisão de internalizar, fim de contrato/projeto sem renovação.</p></div>
       <div class="c2"><h4>Onde vive</h4><p>Ainda não tem um funil de pós-venda pra hospedar esse campo (ver "Sugestões de evolução" → Funil de CS e CX, aba Funil ND). Enquanto esse funil não existe, pode nascer como campo na <strong>Empresa</strong> — assim já registra o motivo de cancelamento independente de o card de venda ainda existir ou não.</p></div>
+    </div>
+    <div class="callout err" style="margin-top:12px">
+      <span class="lbl">Vai herdar o mesmo problema do Motivo de Perda</span>
+      <p>Assim como <strong>Motivo de Perda</strong> (seção 02, aba Campos Personalizados) é global pra conta inteira, um <strong>Motivo de Cancelamento</strong> criado como campo de Empresa também vai aparecer pra qualquer conta/organização de qualquer funil — os 5 campos de Empresa que já existem hoje (Cidade, Estado, Produtos, CNPJ, Sobre) não têm <code>display_rules</code> nenhum, ou seja, campo de Empresa não tem como ser restrito por funil na ferramenta. Antes de criar, vale já nascer com uma lista pensada pra servir Nação Digital <strong>e</strong> Precisian (e qualquer funil futuro) — não só pro caso de venda, senão vira o mesmo remendo que a auditoria achou nos 27 campos da Negociação (seção 03: campo pensado pra um cliente, visível pra todos).</p>
     </div>
 
     <div class="callout" style="margin-top:16px">
