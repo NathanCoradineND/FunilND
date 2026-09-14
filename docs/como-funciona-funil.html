@@ -458,12 +458,26 @@
       <p style="margin-top:8px"><strong>Em aberto:</strong> o funil ND ainda não define quando usar o status <strong>Pausada</strong> (aberta, mas parada por decisão de quem está com o card — diferente de "esfriando" por falta de atenção). Vale decidir com o time se e quando ele entra no processo.</p></div>
     </div>
     <div class="gacc-item">
-      <button class="gacc-head" onclick="toggleGacc(this)"><span class="d"></span><span class="tit">Campos obrigatórios por etapa</span><span class="tag">nativo · Pro/Advanced</span><span class="chev">⌄</span></button>
+      <button class="gacc-head" onclick="toggleGacc(this)"><span class="d"></span><span class="tit">Campos obrigatórios por etapa</span><span class="tag">1 ativo hoje · conferido via API 14/09</span><span class="chev">⌄</span></button>
       <div class="gacc-body">
-      <p>O RD CRM permite marcar campos como <strong>obrigatórios pra avançar de etapa</strong> — o sistema trava fisicamente o card se o campo não estiver preenchido. É a forma de fazer o "gatilho de passagem" de cada etapa deixar de ser combinado e virar regra.</p>
+      <p>O RD CRM permite marcar campos como <strong>obrigatórios pra avançar de etapa</strong> — o sistema trava fisicamente o card se o campo não estiver preenchido. É a forma de fazer o "gatilho de passagem" de cada etapa (seção 02 desta aba) deixar de ser combinado e virar regra.</p>
       <p style="margin-top:8px">Um campo personalizado tem 4 níveis possíveis: <strong>Visível</strong> (aparece, mas é opcional) · <strong>Obrigatório</strong> (precisa ser preenchido, sem amarração a uma etapa) · <strong>Sempre</strong> (trava até a criação da negociação — não dá pra nem abrir o card sem preencher) · <strong>Etapa</strong> (o nível que interessa aqui: você escolhe a partir de qual etapa o campo passa a ser exigido pra avançar).</p>
-      <p style="margin-top:8px"><strong>Como configurar:</strong> Configurações → Campos Personalizados → editar o campo → nível "Etapa" → selecionar funil e etapa. Ex.: pra sair de Discovery, exigir Dor principal, Orçamento estimado e Decisor identificado.</p>
-      <p style="margin-top:8px">A página oficial da RD documenta este recurso pro plano <strong>Pro</strong>; a ND está no <strong>Advanced</strong> (tier acima), então deve estar incluso — vale só confirmar direto em Configurações antes de formalizar isso no processo.</p></div>
+      <p style="margin-top:8px"><strong>Como configurar:</strong> Configurações → Campos Personalizados → editar o campo → nível "Etapa" → selecionar funil e etapa.</p>
+
+      <p class="fc-note" style="margin-top:12px;color:var(--nd-success)"><strong>Hoje, no funil ND, só existe 1 campo obrigatório de verdade:</strong> <code>Data Discovery</code> — criado em 09/09/2026, nível "Etapa", exigido a partir de Discovery (continua exigido em Proposta, Negociação e Fechado). Nenhum campo trava a saída de SQL ainda.</p>
+
+      <div class="scroll" style="margin-top:10px"><table>
+        <thead><tr><th>Etapa</th><th>Obrigatório hoje</th><th>Proposto pra travar a saída desta etapa</th></tr></thead>
+        <tbody>
+          <tr><td><strong>SQL</strong></td><td><span style="color:var(--nd-g400)">nenhum</span></td><td><span style="color:var(--nd-g400)">nenhum novo cogitado — o gatilho já é "marcou o Discovery", que é agenda, não campo</span></td></tr>
+          <tr><td><strong>Discovery</strong></td><td><code>Data Discovery</code></td><td>+ <code>Dor principal</code> · <code>Orçamento estimado</code> · <code>Decisor identificado</code> <span style="color:var(--nd-g400)">(campos a criar — seção 06 da aba Campos Personalizados)</span></td></tr>
+          <tr><td><strong>Proposta</strong></td><td><code>Data Discovery</code> <span style="color:var(--nd-g400)">(herdado, continua valendo)</span></td><td>+ <code>Validade da proposta</code></td></tr>
+          <tr><td><strong>Negociação</strong></td><td><code>Data Discovery</code> <span style="color:var(--nd-g400)">(herdado)</span></td><td>+ <code>Forma de pagamento</code></td></tr>
+          <tr><td><strong>Fechado</strong></td><td><code>Data Discovery</code> <span style="color:var(--nd-g400)">(herdado)</span></td><td><span style="color:var(--nd-g400)">nenhum novo — etapa terminal</span></td></tr>
+        </tbody>
+      </table></div>
+      <p class="fc-note" style="margin-top:8px">A coluna "proposto" segue o que a etapa já pede em Ações/Gatilho (seção 02): Discovery já manda "mapear decisor, orçamento aproximado e prazo", Proposta já tem prazo de retorno, Negociação já fecha condição comercial. Travar por campo obrigatório só formaliza o que já é esperado na prática — falta criar os campos (aba Campos Personalizados, seção 06) e configurar o nível "Etapa" pra cada um. Ainda não implementado, é a proposta pra validar com o time.</p>
+      <p class="fc-note" style="margin-top:8px">A página oficial da RD documenta este recurso pro plano <strong>Pro</strong>; a ND está no <strong>Advanced</strong> (tier acima), então deve estar incluso — vale só confirmar direto em Configurações antes de formalizar isso no processo.</p></div>
     </div>
     <div class="gacc-item">
       <button class="gacc-head" onclick="toggleGacc(this)"><span class="d"></span><span class="tit">Lembrete de prazos vencendo</span><span class="tag">a configurar</span><span class="chev">⌄</span></button>
@@ -924,12 +938,12 @@
   <div class="wrap">
     <p class="overline">06</p>
     <h2>O que falta de verdade pro funil ND</h2>
-    <p class="sec-lead">Descontando o que já existe nativo, isto é o que realmente precisa ser criado como campo novo na Negociação, específico pro funil ND:</p>
+    <p class="sec-lead">Descontando o que já existe nativo, isto é o que realmente precisa ser criado como campo novo na Negociação, específico pro funil ND. <strong style="color:var(--nd-success)">1 de 6 já criado</strong> (conferido via API em 14/09) — os outros 5 seguem como próximo passo, junto com marcá-los obrigatórios por etapa (aba Funil ND, "Campos obrigatórios por etapa").</p>
     <div class="cards2">
+      <div class="c2" style="border-left:3px solid var(--nd-success)"><h4>Data Discovery <span class="tagfield" style="background:rgba(74,222,128,.12);color:var(--nd-success);border:1px solid rgba(74,222,128,.3)">criado 09/09</span></h4><p>Data — já criado e já obrigatório a partir da etapa Discovery (nível "Etapa", ver aba Funil ND). Único campo obrigatório do funil ND hoje.</p></div>
       <div class="c2"><h4>Dor principal</h4><p>Texto longo — preenchido no Discovery</p></div>
       <div class="c2"><h4>Orçamento estimado</h4><p>Número/moeda — preenchido no Discovery</p></div>
       <div class="c2"><h4>Decisor identificado</h4><p>Sim/não — preenchido no Discovery</p></div>
-      <div class="c2"><h4>Data da Discovery</h4><p>Data — preenchido no SQL</p></div>
       <div class="c2"><h4>Validade da proposta</h4><p>Data — preenchido na Proposta</p></div>
       <div class="c2"><h4>Forma de pagamento</h4><p>Lista — preenchido na Negociação</p></div>
     </div>
@@ -1043,27 +1057,32 @@
   </div>
 
   <h3 style="margin-top:20px">Fluxos recomendados — do mais essencial ao avançado</h3>
+  <p class="sec-lead" style="font-size:.82rem">Atualização 14/09: Nathan já configurou no RD CRM as automações de <strong>criação automática de tarefa ao entrar na etapa</strong> (linhas 1, 5 e 6) — o resto do catálogo segue como proposta, não implementado ainda.</p>
   <div class="scroll"><table>
-    <thead><tr><th>#</th><th>Objetivo</th><th>Gatilho</th><th>Ação</th></tr></thead>
+    <thead><tr><th>#</th><th>Objetivo</th><th>Gatilho</th><th>Ação</th><th>Status</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td><strong>Boas-vindas + 1º contato</strong></td><td>Negociação criada na etapa SQL</td><td>E-mail de confirmação pro lead + cria tarefa "1ª tentativa de contato" pro dono (prazo: agora)</td></tr>
-      <tr><td>2</td><td><strong>SLA de resposta</strong></td><td>Negociação em SQL sem nenhuma interação em 30 min</td><td>Troca o responsável (roleta) — ou, no mínimo, notifica o gestor</td></tr>
-      <tr><td>3</td><td><strong>Distribuição round-robin</strong></td><td>Negociação criada sem responsável</td><td>Alterna o responsável entre os vendedores ativos do time</td></tr>
-      <tr><td>4</td><td><strong>Passagem automática por campo</strong></td><td>Campos "Decisor identificado" = Sim <em>e</em> "Orçamento estimado" preenchido</td><td>Move a negociação de Discovery → Proposta</td></tr>
-      <tr><td>5</td><td><strong>Cadência do Playbook</strong></td><td>Negociação movida pra Proposta</td><td>Cria tarefa "Follow-up de proposta" com prazo +48h (na Negociação: "Cobrar assinatura" +3 dias)</td></tr>
-      <tr><td>6</td><td><strong>Tarefas do Discovery</strong></td><td>Negociação movida pra Discovery</td><td>Cria "Montar proposta" + "Subir a transcrição da reunião"</td></tr>
-      <tr><td>7</td><td><strong>Proposta esfriando</strong></td><td>Negociação parada em Proposta há 3 dias</td><td>Notifica o dono + cria tarefa "Retomar contato"</td></tr>
-      <tr><td>8</td><td><strong>Alerta de inatividade à gestão</strong></td><td>Negociação aberta parada 5–7 dias sem tarefa nem contato</td><td>E-mail pro gestor com a lista</td></tr>
-      <tr><td>9</td><td><strong>Previsão de fechamento vencida</strong></td><td>Negociação aberta com Data de Previsão de Fechamento no passado</td><td>Cria tarefa "Decidir: ganho, perdido ou novo prazo"</td></tr>
-      <tr><td>10</td><td><strong>Handover no Fechado</strong></td><td>Negociação marcada como ganha</td><td>Cria as tarefas de handover (financeiro, jurídico, kick-off) + e-mail interno pro time de operação + cria a negociação espelho no futuro funil de CS/CX</td></tr>
-      <tr><td>11</td><td><strong>Comemoração / repasse</strong></td><td>Negociação marcada como ganha</td><td>E-mail pro time comercial (a ND já tem uma versão disso)</td></tr>
-      <tr><td>12</td><td><strong>Reengajamento por motivo de perda</strong></td><td>Negociação perdida com motivo X (volta o dado pro Marketing)</td><td>"Não está no timing" → nutrição de 2–3 meses · "Achou o valor alto" → oferta com condição especial <span style="opacity:.7">(caso RD: cupom de 10% recuperou 20–30% das perdas por preço)</span></td></tr>
-      <tr><td>13</td><td><strong>Painel próprio / BI</strong></td><td>Webhook: negociação criada ou atualizada</td><td>POST pro n8n / Make / planilha viva → monta forecast e indicadores fora do RD</td></tr>
+      <tr><td>1</td><td><strong>Boas-vindas + 1º contato</strong></td><td>Negociação criada na etapa SQL</td><td>E-mail de confirmação pro lead + cria tarefa "1ª tentativa de contato" pro dono (prazo: agora)</td><td><span class="tagfield" style="background:rgba(74,222,128,.12);color:var(--nd-success);border:1px solid rgba(74,222,128,.3)">ativo</span></td></tr>
+      <tr><td>2</td><td><strong>SLA de resposta</strong></td><td>Negociação em SQL sem nenhuma interação em 30 min</td><td>Troca o responsável (roleta) — ou, no mínimo, notifica o gestor</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
+      <tr><td>3</td><td><strong>Distribuição round-robin</strong></td><td>Negociação criada sem responsável</td><td>Alterna o responsável entre os vendedores ativos do time</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
+      <tr><td>4</td><td><strong>Passagem automática por campo</strong></td><td>Campos "Decisor identificado" = Sim <em>e</em> "Orçamento estimado" preenchido</td><td>Move a negociação de Discovery → Proposta</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
+      <tr><td>5</td><td><strong>Cadência do Playbook</strong></td><td>Negociação movida pra Proposta</td><td>Cria tarefa "Follow-up de proposta" com prazo +48h (na Negociação: "Cobrar assinatura" +3 dias)</td><td><span class="tagfield" style="background:rgba(74,222,128,.12);color:var(--nd-success);border:1px solid rgba(74,222,128,.3)">ativo</span></td></tr>
+      <tr><td>6</td><td><strong>Tarefas do Discovery</strong></td><td>Negociação movida pra Discovery</td><td>Cria "Montar proposta" + "Subir a transcrição da reunião"</td><td><span class="tagfield" style="background:rgba(74,222,128,.12);color:var(--nd-success);border:1px solid rgba(74,222,128,.3)">ativo</span></td></tr>
+      <tr><td>7</td><td><strong>Proposta esfriando</strong></td><td>Negociação parada em Proposta há 3 dias</td><td>Notifica o dono + cria tarefa "Retomar contato"</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
+      <tr><td>8</td><td><strong>Alerta de inatividade à gestão</strong></td><td>Negociação aberta parada 5–7 dias sem tarefa nem contato</td><td>E-mail pro gestor com a lista</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
+      <tr><td>9</td><td><strong>Previsão de fechamento vencida</strong></td><td>Negociação aberta com Data de Previsão de Fechamento no passado</td><td>Cria tarefa "Decidir: ganho, perdido ou novo prazo"</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
+      <tr><td>10</td><td><strong>Handover no Fechado</strong></td><td>Negociação marcada como ganha</td><td>Cria as tarefas de handover (financeiro, jurídico, kick-off) + e-mail interno pro time de operação + cria a negociação espelho no futuro funil de CS/CX</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
+      <tr><td>11</td><td><strong>Comemoração / repasse</strong></td><td>Negociação marcada como ganha</td><td>E-mail pro time comercial (a ND já tem uma versão disso)</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
+      <tr><td>12</td><td><strong>Reengajamento por motivo de perda</strong></td><td>Negociação perdida com motivo X (volta o dado pro Marketing)</td><td>"Não está no timing" → nutrição de 2–3 meses · "Achou o valor alto" → oferta com condição especial <span style="opacity:.7">(caso RD: cupom de 10% recuperou 20–30% das perdas por preço)</span></td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
+      <tr><td>13</td><td><strong>Painel próprio / BI</strong></td><td>Webhook: negociação criada ou atualizada</td><td>POST pro n8n / Make / planilha viva → monta forecast e indicadores fora do RD</td><td><span class="tagfield" style="color:var(--nd-g400);border:1px solid rgba(255,255,255,.15)">proposta</span></td></tr>
     </tbody>
   </table></div>
+  <div class="callout warn" style="margin-top:12px">
+    <span class="lbl">Confirmar com Nathan</span>
+    <p>A marcação "ativo" nas linhas 1, 5 e 6 é a leitura desta atualização a partir do que foi relatado no chat — vale confirmar direto em Configurações → Automações do RD CRM se o gatilho e a ação batem exatamente com o que está descrito aqui (nome da tarefa, prazo), pra esta tabela não ficar defasada da configuração real.</p>
+  </div>
   <div class="callout" style="margin-top:12px">
-    <span class="lbl">Ordem de implementação sugerida</span>
-    <p>Começar por <strong>1, 2, 5 e 7</strong> (entrada rápida + cadência + não esfriar) — é o que mais move ponteiro com menos risco. Depois <strong>4, 8, 9</strong> (disciplina de dado). Por último <strong>10, 12, 13</strong> (dependem do funil de CS/CX e de integração externa).</p>
+    <span class="lbl">Ordem de implementação sugerida — o que falta</span>
+    <p>Começar por <strong>2 e 7</strong> (SLA de resposta e proposta esfriando — fecham o ciclo de "não esfriar" que 1, 5 e 6 começaram). Depois <strong>4, 8, 9</strong> (disciplina de dado). Por último <strong>10, 12, 13</strong> (dependem do funil de CS/CX e de integração externa).</p>
   </div>
 </div></section>
 
